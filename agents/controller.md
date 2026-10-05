@@ -6,16 +6,16 @@ Read `PRODUCT_SPEC.md`, `AGENTS.md`, and `agents/protocol.md` before doing anyth
 
 ## Loop
 
-1. Read `STATUS.md` and `docs/tasks/BACKLOG.md`. Pick the next unfinished phase from `PRODUCT_SPEC.md` section 16, or the task Mike named. Do not start backlog work unless Mike named it.
-2. Decompose the phase into small contracts at `docs/tasks/T-###-short-name.md`. One behavior each. File scopes must not overlap, so they can run at the same time. Split a contract that touches both `src/rules` and `src/render`.
+1. Pull `origin/main`. Read `STATUS.md` and `docs/tasks/BACKLOG.md` from that commit, not from a stale checkout. Pick the next unfinished phase from `PRODUCT_SPEC.md` section 16, or the task Mike named. Skip any task already `in progress` or whose file scope overlaps one that is. Do not start backlog work unless Mike named it.
+2. Decompose the phase into small contracts at `docs/tasks/T-###-short-name.md`. One behavior each. File scopes must not overlap each other or any in-flight task, so several controllers can run at once. Split a contract that touches both `src/rules` and `src/render`.
 3. Run the verifiability gate below. Rewrite or split a contract that fails it. Do not delegate a failing contract.
-4. For each contract, create a worktree and set the task `in progress` in `STATUS.md`. Hand that path to a fresh implementer. Start every non-overlapping contract together.
+4. Claim before starting. In an integration worktree, set each new task `in progress` in `STATUS.md`, commit the contract and the ledger, and push to `origin/main`. If the push is rejected, another controller claimed first. Pull, discard the claim, and pick different work. Only after the push succeeds, create the task worktree from that commit and hand it to a fresh implementer. Start every non-overlapping claimed contract together.
 5. When an implementer finishes, create a new worktree at that candidate commit and hand it to a fresh verifier. Never verify inside the implementer's worktree. Never skip this, even on an implementer PASS.
 6. Record both reports in `docs/tasks/evidence/T-###.md` before acting. Merge verifier-written backlog files, dedupe them, and update `docs/tasks/BACKLOG.md`.
    - Verifier PASS → `done` in `STATUS.md`.
    - Verifier FAIL → back to the implementer with the findings. Three rounds, then `blocked`, and ask Mike.
    - Ambiguity or a spec conflict → `blocked`. Ask Mike. Do not guess.
-7. Merge verified branches one at a time in an integration worktree. Run the gate on the integrated result before pushing. Then remove the task worktrees.
+7. Merge verified branches one at a time in a fresh integration worktree, not the shared main checkout. Pull first. Update `STATUS.md` and the backlog index there. Run the gate on the integrated result. Push with a fast-forward only. If the push is rejected, pull and merge again. `done` and `blocked` may ride along with that merge. Then remove the task worktrees.
 8. When every task in a phase is `done`, and the phase is playable (phases 3–6), create a critic worktree at the integrated commit and hand it over. Do not call the phase done until the critic reports and Mike has accepted or deferred each spec proposal.
 
 ## Verifiability gate
@@ -32,7 +32,7 @@ Read `PRODUCT_SPEC.md`, `AGENTS.md`, and `agents/protocol.md` before doing anyth
 - One worktree per task: `git worktree add -b t-###-name ../math-chomper-worktrees/t-###-name main`, then `npm install` there. Pass that absolute path.
 - Verifier worktree is a new checkout of the candidate commit, not the implementer's tree.
 - Critic worktree is a new checkout of the integrated commit. Its dev server uses a port no other worktree has.
-- Controller integration happens in `git worktree add --detach ../math-chomper-worktrees/integrate main`. Push from there. Do not stage or commit in the shared main checkout while other worktrees are live.
+- Controller integration and ledger edits happen in `git worktree add --detach ../math-chomper-worktrees/integrate main`. Push from there with a fast-forward only. Do not stage or commit in the shared main checkout. Another controller may be reading it. A git-index race in a shared checkout can fold one controller's staged files into another's commit. A worktree has its own index, so that race cannot happen there.
 - Remove a worktree after its branch is merged, or after the critic report is recorded.
 
 ## Status

@@ -13,7 +13,7 @@ Roles, adapted from NextThing `docs/agents/` and locked 2026-10-05:
 
 No work is done until a fresh verifier says PASS. A playable phase is not done until the critic has reported and Mike has accepted or deferred each spec proposal. "It should work" is not verification.
 
-Isolation is the rule. Implement, verify, and critique each happen in their own git worktree. Nobody edits the shared main checkout while another role is running. The controller integrates in a throwaway worktree and pushes from there.
+Isolation is the rule, and more than one controller may run at once. Implement, verify, and critique each happen in their own git worktree. No controller stages in the shared main checkout. Claiming a task means pulling `main`, writing the contract and the `in progress` row, and pushing that to `origin/main` before any implementer starts. A rejected fast-forward means another controller won the claim; pull and pick different work. Integration happens in a throwaway worktree. Git's fast-forward push is the lock, not care taken in a shared directory.
 
 Title is Math Chomper. Package name is `math-chomper`. localStorage prefix is `mathchomper.`. Do not rename the project, and do not use the names Number Munchers, Math Munchers, Muncher, Troggle, or Trogglus anywhere in UI, code, comments, or commits.
 
