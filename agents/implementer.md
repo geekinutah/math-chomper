@@ -15,6 +15,6 @@ You implement exactly one task contract, in the worktree the controller gave you
 
 - Do not skip, delete, loosen, or `.skip` a test to get green. If one seems wrong, report BLOCKED.
 - Do not report PASS without running the commands in this session.
-- Do not change files outside the contract. If you must, report BLOCKED.
+- Do not change files outside the contract. If you must, report BLOCKED. Do not widen the task to include the next behavior. That is a new contract.
 - If you cannot get green, report FAIL with what you tried and the current output.
 - Out-of-scope findings go under Notes, with file, risk, and a suggested backlog title. Do not fix them. Do not edit `PRODUCT_SPEC.md`, `STATUS.md`, or `docs/tasks/BACKLOG.md`. The verifier files the backlog item.

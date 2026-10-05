@@ -38,7 +38,8 @@ The gate is `npm test && npm run typecheck && npm run build`. All three must suc
 
 ## How to work
 
-- The controller splits a phase from `PRODUCT_SPEC.md` section 16 into small contracts whose file scopes do not overlap, then runs those in parallel, one worktree each.
+- Modularize. A phase is not a task. The controller splits each phase into contracts a single implementer can finish in one sitting: one behavior, one module, a file list that does not overlap any other in-flight contract. "Build enemies" is four or five contracts, not one. If two contracts would edit the same file, one of them is too big.
+- Prefer a new module over growing a shared file. Rules, board generation, each enemy behavior, input, rendering, audio, and storage are separate scopes so they can run in parallel.
 - A finding outside the current contract is a backlog item, not a drive-by fix. The verifier writes the item file. The controller dedupes the index on merge.
 - Do not add features that are not in the spec. Cutscenes, music, multiplayer, accounts, and a level editor are out.
 - Game truth lives in plain objects and reducers under `src/game` and `src/rules`. The canvas only draws. The DOM only displays HUD and menus.
