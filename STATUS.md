@@ -4,7 +4,7 @@ Ledger for contracted work. The controller updates this file. Other roles do not
 
 | Id | Title | Phase | State | Round | Worktree | Critic |
 |---|---|---|---|---|---|---|
-| — | — | — | — | — | — | — |
+| T-001 | Project Scaffold | 1 | in progress | 1 | ../math-chomper-worktrees/t-001-scaffold | no |
 
 States: `todo`, `in progress`, `verifying`, `done`, `blocked`.
 
