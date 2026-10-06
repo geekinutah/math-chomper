@@ -20,9 +20,9 @@ Ledger for contracted work. The controller updates this file. Other roles do not
 | T-014 | Spawning + Refuge | 4 | done | 1 | — | no |
 | T-015 | Tick + State Extension | 4 | done | 2 | — | no |
 | T-016 | Enemy + Refuge Rendering | 4 | done | 1 | — | MET |
-| T-017 | Band Content | 5 | in progress | 1 | ../math-chomper-worktrees/t-017-bands | no |
-| T-018 | State: All Modes + Challenge + Band | 5 | todo | 1 | — | no |
-| T-019 | Mode Select + Settings UI | 5 | todo | 1 | — | no |
+| T-017 | Band Content | 5 | done | 1 | — | no |
+| T-018 | State: All Modes + Challenge + Band | 5 | in progress | 1 | ../math-chomper-worktrees/t-018-modes | no |
+| T-019 | Mode Select + Settings UI | 5 | in progress | 1 | ../math-chomper-worktrees/t-019-ui | no |
 | T-020 | Integration: Band Spawn + Mode Wiring | 5 | todo | 1 | — | yes |
 
 States: `todo`, `in progress`, `verifying`, `done`, `blocked`.
