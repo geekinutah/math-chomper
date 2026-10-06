@@ -31,6 +31,8 @@ Ledger for contracted work. The controller updates this file. Other roles do not
 | T-025 | High Scores UI | 6 | done | 1 | — | no |
 | T-026 | Phase 6 Integration | 6 | done | 1 | — | yes |
 | T-027 | Remove Match-Highlight Border (critic fix) | 6 | done | 1 | — | no |
+| T-028 | In-Run Ramp (Level 18+) | 6 | in progress | 1 | ../math-chomper-worktrees/t-028-ramp | no |
+| T-029 | Hard Band Larger Expression Results | 6 | todo | 1 | — | no |
 
 States: `todo`, `in progress`, `verifying`, `done`, `blocked`.
 
@@ -41,6 +43,6 @@ None.
 ## Spec proposals awaiting Mike
 
 1. ~~**Remove match-highlight border** (critic Phase 3).~~ Accepted by Mike 2026-10-06 ("the faint green border is just cheating") → T-027. The spec was silent on the highlight; this is a contract-level rendering fix, no spec edit needed.
-2. **Assign §8 in-run ramp to a phase** (critic Phase 4). Spec §8 says "Level 18+: step delays ×0.85, floored. Refuges rare" and §3 says "After about level 18, enemy step delay drops." Currently constant 420 ms / constant refuge probability to level 34+. Suggest adding to Phase 5 or 6. — Awaiting accept/defer.
-3. **§8 Hard expressions ambiguous** (critic Phase 5). "operands to 12, larger results" — shipped Hard uses identical expr ranges to Standard. Replace with concrete difference or confirm they're the same. — Awaiting accept/defer.
+2. ~~**Assign §8 in-run ramp to a phase** (critic Phase 4).~~ Accepted by Mike 2026-10-06 → T-028. Decisions: enemy step delay ×0.85/level from 18, floored 180 ms (§9); refuge spawn probability halved at 18+ (0.003 → 0.0015/tick).
+3. ~~**§8 Hard expressions ambiguous** (critic Phase 5).~~ Accepted by Mike 2026-10-06 → T-029. Decision: Hard = all four ops, operands 0–12, results ≥ 13 (bounded retry + known-valid fallback). Consequence: Hard equality/inequality k draws 13–20; board generation gains a termination cap (resolves B-003).
 4. ~~**§13 settings persistence** (critic Phase 5).~~ Resolved by Phase 6 (T-023/T-026): settings saved to `mathchomper.settings.v1`, mode select remembers last choice, mute/touch/band persist.
