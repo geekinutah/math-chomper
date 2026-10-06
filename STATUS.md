@@ -10,12 +10,12 @@ Ledger for contracted work. The controller updates this file. Other roles do not
 | T-004 | Rule Matching | 2 | done | 1 | — | no |
 | T-005 | Board Generator | 2 | done | 1 | — | no |
 | T-006 | Game State + Reducers | 3 | done | 1 | — | no |
-| T-007 | Game Loop | 3 | in progress | 1 | ../math-chomper-worktrees/t-007-loop | no |
-| T-008 | Keyboard Input | 3 | in progress | 1 | ../math-chomper-worktrees/t-008-keyboard | no |
-| T-009 | Board Rendering | 3 | in progress | 1 | ../math-chomper-worktrees/t-009-render | no |
-| T-010 | HUD + Screens | 3 | in progress | 1 | ../math-chomper-worktrees/t-010-hud | no |
-| T-011 | Board/Level Mgmt | 3 | in progress | 1 | ../math-chomper-worktrees/t-011-board | no |
-| T-012 | Integration (main+index) | 3 | todo | 1 | — | yes |
+| T-007 | Game Loop | 3 | done | 1 | — | no |
+| T-008 | Keyboard Input | 3 | done | 1 | — | no |
+| T-009 | Board Rendering | 3 | done | 1 | — | no |
+| T-010 | HUD + Screens | 3 | done | 1 | — | no |
+| T-011 | Board/Level Mgmt | 3 | done | 1 | — | no |
+| T-012 | Integration (main+index) | 3 | in progress | 1 | ../math-chomper-worktrees/t-012-integration | yes |
 
 States: `todo`, `in progress`, `verifying`, `done`, `blocked`.
 
