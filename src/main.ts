@@ -3,7 +3,10 @@ import { createLoop } from "@/game/loop";
 import { attachKeyboard } from "@/input/keyboard";
 import { renderBoard, createBoardCanvas } from "@/render/canvas";
 import { renderHud } from "@/ui/hud";
-import { renderScreens } from "@/ui/screens";
+import { renderScreens, type SubScreen } from "@/ui/screens";
+import { DEFAULT_SETTINGS, type Settings } from "@/ui/settings";
+import type { GameMode } from "@/game/state";
+import type { BandName } from "@/content/bands";
 
 let lcg = 42;
 const rng = (): number => {
@@ -29,6 +32,8 @@ if (ctx === null) throw new Error("Canvas 2D context unavailable");
 ctx.imageSmoothingEnabled = false;
 
 let state: GameState = createInitialState();
+let subScreen: SubScreen = "none";
+let settings: Settings = { ...DEFAULT_SETTINGS };
 
 const dispatch = (action: Action): void => {
   state = reduce(state, action, rng);
@@ -37,7 +42,15 @@ const dispatch = (action: Action): void => {
 const renderAll = (s: GameState): void => {
   renderBoard(ctx, s);
   renderHud(hudEl, s);
-  renderScreens(screensEl, s, dispatch);
+  renderScreens(
+    screensEl, s, dispatch,
+    subScreen,
+    settings,
+    (ss: SubScreen) => { subScreen = ss; renderAll(state); },
+    (mode: GameMode, band: BandName) => { subScreen = "none"; dispatch({ type: "start", mode, band }); renderAll(state); },
+    (s: Settings) => { settings = s; renderAll(state); },
+    () => {},
+  );
   hudEl.classList.toggle("hidden", s.phase === "title");
 };
 

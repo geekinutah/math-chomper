@@ -6,6 +6,7 @@ import { spawnEnemy, spawnRefuge, enemyCap } from "./spawn";
 import { allMatchesCleared } from "./board";
 import { matches } from "@/rules/match";
 import type { Cell, Rule } from "@/rules/types";
+import { getBand, getEnemyKinds, type BandName } from "@/content/bands";
 
 const STEP_MS = 420;
 
@@ -23,10 +24,8 @@ function genRewriteCell(rule: Rule, rng: () => number): Cell {
   return { kind: "number", value: 1 + Math.floor(rng() * 60) };
 }
 
-function pickEnemyKind(level: number, rng: () => number): EnemyKind {
-  if (level < 4) return "straight";
-  if (level < 8) return rng() < 0.5 ? "straight" : "shy";
-  const kinds: EnemyKind[] = ["straight", "shy", "eater", "rewriter", "chaser"];
+function pickEnemyKind(bandName: BandName, level: number, rng: () => number): EnemyKind {
+  const kinds = getEnemyKinds(getBand(bandName), level);
   return kinds[Math.floor(rng() * kinds.length)];
 }
 
@@ -142,7 +141,7 @@ export function handleTick(
 
   const cap = enemyCap(state.level);
   if (deduped.length < cap && rng() < 0.002) {
-    const kind = pickEnemyKind(state.level, rng);
+    const kind = pickEnemyKind(state.band, state.level, rng);
     const newEnemy = spawnEnemy(kind, state, rng);
     if (newEnemy) {
       newEnemy.id = nextId(deduped);
