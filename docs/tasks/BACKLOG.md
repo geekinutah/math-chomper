@@ -16,6 +16,8 @@ Index only. One line per item. The verifier or critic writes the item file in it
 | B-010 | Enemy dedup does not schedule replacement spawn | T-015 | open |
 | B-011 | Local type duplication in spawn.ts | T-014 | open |
 | B-012 | Contract perimeter count error (22 vs 18) | T-014 | open |
+| B-013 | T-027 contract omits closePath from FakeCtx list | T-027 | open |
+| B-014 | Dev-dependency audit: vitest transitive vulns, unapproved install scripts | T-027 | open |
 
 States: `open`, `accepted`, `resolved`, `declined`.
 

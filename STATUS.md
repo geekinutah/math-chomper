@@ -30,7 +30,7 @@ Ledger for contracted work. The controller updates this file. Other roles do not
 | T-024 | Touch Controls | 6 | done | 1 | — | no |
 | T-025 | High Scores UI | 6 | done | 1 | — | no |
 | T-026 | Phase 6 Integration | 6 | done | 1 | — | yes |
-| T-027 | Remove Match-Highlight Border (critic fix) | 6 | in progress | 1 | ../math-chomper-worktrees/t-027-no-match-highlight | no |
+| T-027 | Remove Match-Highlight Border (critic fix) | 6 | done | 1 | — | no |
 
 States: `todo`, `in progress`, `verifying`, `done`, `blocked`.
 
