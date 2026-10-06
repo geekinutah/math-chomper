@@ -28,8 +28,8 @@ Ledger for contracted work. The controller updates this file. Other roles do not
 | T-022 | Audio Beeps | 6 | done | 2 | — | no |
 | T-023 | Storage (Settings + Scores) | 6 | done | 1 | — | no |
 | T-024 | Touch Controls | 6 | done | 1 | — | no |
-| T-025 | High Scores UI | 6 | in progress | 1 | ../math-chomper-worktrees/t-025-scores | no |
-| T-026 | Phase 6 Integration | 6 | todo | 1 | — | yes |
+| T-025 | High Scores UI | 6 | done | 1 | — | no |
+| T-026 | Phase 6 Integration | 6 | done | 1 | — | yes |
 
 States: `todo`, `in progress`, `verifying`, `done`, `blocked`.
 
