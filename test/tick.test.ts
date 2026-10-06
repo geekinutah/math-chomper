@@ -1,10 +1,12 @@
 import { describe, it, expect } from "vitest";
-import type { Cell } from "@/rules/types";
+import type { Cell, Rule } from "@/rules/types";
 import type { Enemy } from "@/game/enemies";
 import { sameCell, chebyshev } from "@/game/enemies";
 import { COLS, ROWS, BOARD_SIZE, type GameState } from "@/game/state";
 import { handleTick } from "@/game/tick";
 import { enemyCap } from "@/game/spawn";
+import { generateBoardForRule } from "@/game/board";
+import { HARD } from "@/content/bands";
 
 function seededRng(seed: number): () => number {
   let s = seed;
@@ -325,5 +327,38 @@ describe("tick", () => {
     const rng = () => 0.09;
     const after = handleTick(s, { type: "tick", dt: 0.5 }, rng);
     expect(after.phase).toBe("playing");
+  });
+
+  it("rewriter on a hard equality board rewrites to a cell ≥ 13", () => {
+    const rule: Rule = { mode: "equality", k: 13 };
+    const board = generateBoardForRule(rule, seededRng(5), HARD);
+    const pos = { col: 0, row: 0 };
+    const enemy = makeEnemy({ kind: "rewriter", pos, dir: "right", stepTimer: 420 });
+    const s = makeState({
+      enemies: [enemy],
+      board,
+      rule,
+      band: "hard",
+      playerPos: { col: 5, row: 4 },
+    });
+    const rewritten: Array<Extract<Cell, { kind: "expr" }>> = [];
+    let state = s;
+    for (let i = 0; i < 30; i += 1) {
+      if (state.phase !== "playing") break;
+      const rewriter = state.enemies.find((e) => e.kind === "rewriter");
+      if (!rewriter) break;
+      const oldPos = { ...rewriter.pos };
+      const next = handleTick(state, { type: "tick", dt: 0.5 }, seededRng(100 + i));
+      const after = next.enemies.find((e) => e.kind === "rewriter");
+      if (after && !sameCell(oldPos, after.pos)) {
+        const cell = next.board[oldPos.row * COLS + oldPos.col];
+        if (cell.kind === "expr") rewritten.push(cell);
+      }
+      state = next;
+    }
+    expect(rewritten.length).toBeGreaterThan(0);
+    for (const cell of rewritten) {
+      expect(cell.value).toBeGreaterThanOrEqual(13);
+    }
   });
 });

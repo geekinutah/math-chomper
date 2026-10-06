@@ -17,7 +17,13 @@ export function generateRule(mode: Mode, level: number, rng: () => number, band?
   const kRange = band ? getKRange(band) : DEFAULT_K;
   // Multiples widens by one per level, capped at the band's k max.
   const top = mode === "multiples" ? Math.min(kRange.max, kRange.min + level + 1) : kRange.max;
-  const k = kRange.min + Math.floor(rng() * (top - kRange.min + 1));
+  // Hard floors expression results at 13; an equality/inequality key below that could
+  // never match a generated expression. Kept in sync with genRule in state.ts.
+  const kMin =
+    mode === "equality" || mode === "inequality"
+      ? Math.max(kRange.min, band?.exprMinResult ?? 0)
+      : kRange.min;
+  const k = kMin + Math.floor(rng() * (top - kMin + 1));
   switch (mode) {
     case "primes":
       return { mode };

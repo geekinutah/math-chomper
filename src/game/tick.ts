@@ -7,8 +7,7 @@ import { allMatchesCleared } from "./board";
 import { matches } from "@/rules/match";
 import type { Cell, Rule } from "@/rules/types";
 import { getBand, getGenConfig, getEnemyKinds, type BandName } from "@/content/bands";
-import { formatExpr, evalExpr } from "@/rules/expr";
-import type { GenConfig } from "@/rules/generate";
+import { generateExprCell, type GenConfig } from "@/rules/generate";
 
 function cellIdx(pos: { col: number; row: number }): number {
   return pos.row * COLS + pos.col;
@@ -20,18 +19,8 @@ function genRewriteNumber(config: GenConfig, rng: () => number): Cell {
 }
 
 function genRewriteExpr(config: GenConfig, rng: () => number): Cell {
-  for (let i = 0; i < 4; i++) {
-    const op = config.exprOps[Math.floor(rng() * config.exprOps.length)];
-    const a = config.exprMin + Math.floor(rng() * (config.exprMax - config.exprMin + 1));
-    const b = config.exprMin + Math.floor(rng() * (config.exprMax - config.exprMin + 1));
-    const text = formatExpr(a, op, b);
-    const value = evalExpr(text);
-    if (value !== null) return { kind: "expr", text, value };
-  }
-  const a = config.exprMin + Math.floor(rng() * (config.exprMax - config.exprMin + 1));
-  const b = config.exprMin + Math.floor(rng() * (config.exprMax - config.exprMin + 1));
-  const text = formatExpr(a, "+", b);
-  return { kind: "expr", text, value: a + b };
+  // Shared with board generation so rewrites obey the band's exprMinResult too.
+  return generateExprCell(config, rng);
 }
 
 function genRewriteCell(rule: Rule, config: GenConfig, rng: () => number): Cell {

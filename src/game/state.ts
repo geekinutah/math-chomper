@@ -65,7 +65,9 @@ function genRule(mode: Mode, level: number, rng: () => number, band: Band): Rule
   const { min: kMin, max: kMax } = getKRange(band);
   // Multiples widens by one per level, capped at the band's k max.
   const top = mode === "multiples" ? Math.min(kMax, kMin + level + 1) : kMax;
-  const k = randomInt(rng, kMin, top);
+  // Hard floors expressions at 13; a lower equality/inequality key could never match.
+  const floor = mode === "equality" || mode === "inequality" ? Math.max(kMin, band.exprMinResult ?? 0) : kMin;
+  const k = randomInt(rng, floor, top);
   switch (mode) {
     case "primes":
       return { mode };

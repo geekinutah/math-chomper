@@ -13,6 +13,7 @@ export type Band = {
   exprOps: Array<"+" | "−" | "×" | "÷">;
   exprMin: number;
   exprMax: number;
+  exprMinResult?: number;
   enemyUnlocks: Array<{ level: number; kind: EnemyKind }>;
 };
 
@@ -61,6 +62,7 @@ export const HARD: Band = {
   exprOps: ["+", "−", "×", "÷"],
   exprMin: 0,
   exprMax: 12,
+  exprMinResult: 13,
   enemyUnlocks: [
     { level: 1, kind: "straight" },
     { level: 1, kind: "shy" },
@@ -87,6 +89,8 @@ export function getGenConfig(band: Band): GenConfig {
     exprOps: band.exprOps,
     exprMin: band.exprMin,
     exprMax: band.exprMax,
+    // Omitted (not just undefined) for bands without a floor, so configs compare clean.
+    ...(band.exprMinResult !== undefined ? { exprMinResult: band.exprMinResult } : {}),
   };
 }
 

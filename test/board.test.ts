@@ -1,6 +1,6 @@
 import { describe, it, expect } from "vitest";
 import type { Cell, Rule } from "@/rules/types";
-import { EASY, HARD } from "@/content/bands";
+import { EASY, HARD, STANDARD } from "@/content/bands";
 import { generateRule, generateBoardForRule, countMatches, allMatchesCleared } from "@/game/board";
 
 function seededRng(seed: number): () => number {
@@ -189,6 +189,43 @@ describe("board", () => {
       if (cell.kind === "expr") {
         expect(cell.text).not.toContain("×");
         expect(cell.text).not.toContain("÷");
+      }
+    }
+  });
+
+  it("generateRule hard equality/inequality: k in 13–20", () => {
+    const r = seededRng(789);
+    for (let i = 0; i < 100; i++) {
+      for (const mode of ["equality", "inequality"] as const) {
+        const rule = generateRule(mode, 1, r, HARD);
+        if (rule.mode === mode) {
+          expect(rule.k).toBeGreaterThanOrEqual(13);
+          expect(rule.k).toBeLessThanOrEqual(20);
+        }
+      }
+    }
+  });
+
+  it("generateRule hard multiples/factors: k in 2–20", () => {
+    const r = seededRng(321);
+    for (let i = 0; i < 100; i++) {
+      for (const mode of ["multiples", "factors"] as const) {
+        const rule = generateRule(mode, 1, r, HARD);
+        if (rule.mode === "multiples" || rule.mode === "factors") {
+          expect(rule.k).toBeGreaterThanOrEqual(2);
+          expect(rule.k).toBeLessThanOrEqual(20);
+        }
+      }
+    }
+  });
+
+  it("generateRule standard equality: k in 2–12", () => {
+    const r = seededRng(789);
+    for (let i = 0; i < 100; i++) {
+      const rule = generateRule("equality", 1, r, STANDARD);
+      if (rule.mode === "equality") {
+        expect(rule.k).toBeGreaterThanOrEqual(2);
+        expect(rule.k).toBeLessThanOrEqual(12);
       }
     }
   });

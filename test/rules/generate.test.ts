@@ -20,6 +20,23 @@ const config: GenConfig = {
   exprMax: 12,
 };
 
+const easyConfig: GenConfig = {
+  numMin: 1,
+  numMax: 30,
+  exprOps: ["+", "−"],
+  exprMin: 0,
+  exprMax: 12,
+};
+
+const hardConfig: GenConfig = {
+  numMin: 1,
+  numMax: 100,
+  exprOps: ["+", "−", "×", "÷"],
+  exprMin: 0,
+  exprMax: 12,
+  exprMinResult: 13,
+};
+
 const MULTIPLES: Rule = { mode: "multiples", k: 6 };
 const FACTORS: Rule = { mode: "factors", k: 2 };
 const PRIMES: Rule = { mode: "primes" };
@@ -164,5 +181,70 @@ describe("generateBoard", () => {
       expect(count).toBeGreaterThanOrEqual(4);
       expect(count).toBeLessThanOrEqual(10);
     });
+  });
+});
+
+describe("hard expression floor", () => {
+  it("hard equality board: every expr cell has value ≥ 13", () => {
+    for (let seed = 1; seed <= 8; seed++) {
+      const board = generateBoard({ mode: "equality", k: 13 }, seededRng(seed), hardConfig);
+      expect(board).toHaveLength(30);
+      for (const cell of board) {
+        expect(cell.kind).toBe("expr");
+        if (cell.kind === "expr") expect(cell.value).toBeGreaterThanOrEqual(13);
+      }
+    }
+  });
+
+  it("standard equality board: can contain values < 13", () => {
+    let sawSmall = false;
+    for (let seed = 1; seed <= 50; seed++) {
+      for (const cell of generateBoard({ mode: "equality", k: 6 }, seededRng(seed), config)) {
+        if (cell.kind === "expr" && cell.value < 13) sawSmall = true;
+      }
+    }
+    expect(sawSmall).toBe(true);
+  });
+
+  it("hard equality k 13, 17, 19, 20: 4–10 matches", () => {
+    for (const k of [13, 17, 19, 20]) {
+      const rule: Rule = { mode: "equality", k };
+      for (let seed = 1; seed <= 8; seed++) {
+        const board = generateBoard(rule, seededRng(seed), hardConfig);
+        const count = matchCount(rule, board);
+        expect(count, `k=${k} seed=${seed}`).toBeGreaterThanOrEqual(4);
+        expect(count, `k=${k} seed=${seed}`).toBeLessThanOrEqual(10);
+      }
+    }
+  });
+
+  it("generateBoard terminates under degenerate rng", () => {
+    const constant = () => 0.5;
+    const configs: GenConfig[] = [easyConfig, config, hardConfig];
+    const rules: Rule[] = [
+      { mode: "multiples", k: 6 },
+      { mode: "factors", k: 6 },
+      { mode: "primes" },
+      { mode: "equality", k: 6 },
+      { mode: "inequality", k: 6 },
+    ];
+    for (const cfg of configs) {
+      for (const rule of rules) {
+        const board = generateBoard(rule, constant, cfg);
+        expect(board).toHaveLength(30);
+        const count = matchCount(rule, board);
+        expect(count).toBeGreaterThanOrEqual(4);
+        expect(count).toBeLessThanOrEqual(10);
+      }
+    }
+  });
+
+  it("hard equality k=5 (hand-crafted rule): 4+ matches", () => {
+    const rule: Rule = { mode: "equality", k: 5 };
+    const board = generateBoard(rule, seededRng(7), hardConfig);
+    expect(board).toHaveLength(30);
+    const count = matchCount(rule, board);
+    expect(count).toBeGreaterThanOrEqual(4);
+    expect(count).toBeLessThanOrEqual(10);
   });
 });

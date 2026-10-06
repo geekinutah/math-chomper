@@ -147,7 +147,29 @@ describe("getGenConfig maps correctly", () => {
 
   it("hard maps to GenConfig", () => {
     const cfg = getGenConfig(HARD);
-    expect(cfg).toEqual({ numMin: 1, numMax: 100, exprOps: ["+", "−", "×", "÷"], exprMin: 0, exprMax: 12 });
+    expect(cfg).toEqual({
+      numMin: 1,
+      numMax: 100,
+      exprOps: ["+", "−", "×", "÷"],
+      exprMin: 0,
+      exprMax: 12,
+      exprMinResult: 13,
+    });
+  });
+});
+
+describe("exprMinResult", () => {
+  it("HARD has exprMinResult 13", () => {
+    expect(HARD.exprMinResult).toBe(13);
+  });
+
+  it("EASY/STANDARD have no exprMinResult", () => {
+    expect(EASY.exprMinResult).toBeUndefined();
+    expect(STANDARD.exprMinResult).toBeUndefined();
+  });
+
+  it("getGenConfig(HARD) passes exprMinResult", () => {
+    expect(getGenConfig(HARD).exprMinResult).toBe(13);
   });
 });
 

@@ -419,6 +419,21 @@ describe("modes and bands", () => {
     expect(saw20).toBe(true);
   });
 
+  it("state: start hard equality keeps k in 13–20 through next-level", () => {
+    let s = start("equality", "hard", 31337);
+    if (s.rule.mode === "equality") {
+      expect(s.rule.k).toBeGreaterThanOrEqual(13);
+      expect(s.rule.k).toBeLessThanOrEqual(20);
+    }
+    for (let i = 0; i < 10; i += 1) {
+      s = reduce({ ...s, phase: "level-clear" }, { type: "next-level" }, seededRng(40000 + i));
+      if (s.rule.mode === "equality") {
+        expect(s.rule.k).toBeGreaterThanOrEqual(13);
+        expect(s.rule.k).toBeLessThanOrEqual(20);
+      }
+    }
+  });
+
   it("level-scaled k: level 1 has smaller range", () => {
     const kAtLevel = (level: number, seed: number): number => {
       let s = start("multiples", "standard", seed);
