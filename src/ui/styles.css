@@ -26,8 +26,6 @@ body {
   display: none !important;
 }
 
-/* HUD bar */
-
 .hud {
   display: flex;
   align-items: center;
