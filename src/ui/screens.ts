@@ -2,6 +2,8 @@ import type { Action, GameState } from "@/game/state";
 import type { BandName } from "@/content/bands";
 import { renderModeSelect, type GameMode } from "@/ui/mode-select";
 import { renderSettings, DEFAULT_SETTINGS, type Settings } from "@/ui/settings";
+import type { ScoreEntry } from "@/storage";
+import { renderScoreList, renderInitialsEntry } from "@/ui/scores";
 
 export type SubScreen = "none" | "mode-select" | "settings";
 
@@ -16,19 +18,25 @@ const HOW_TO_PLAY: readonly string[] = [
 
 interface ScreenRefs {
   title: HTMLElement;
+  titleScores: HTMLElement;
   levelClear: HTMLElement;
   levelClearText: HTMLElement;
   gameOver: HTMLElement;
   gameOverScore: HTMLElement;
   gameOverLevel: HTMLElement;
+  gameOverScores: HTMLElement;
+  initialsHost: HTMLElement;
+  inGameOver: boolean;
   paused: HTMLElement;
   modeSelectHost: HTMLElement;
   settingsHost: HTMLElement;
+  scores: ScoreEntry[];
   onAction: (a: Action) => void;
   onOpenSubScreen?: (s: SubScreen) => void;
   onModeSelect?: (mode: GameMode, band: BandName) => void;
   onSettingsChange?: (s: Settings) => void;
   onResetScores?: () => void;
+  onScoreSave?: (name: string) => void;
 }
 
 const screenRefs = new WeakMap<HTMLElement, ScreenRefs>();
@@ -65,6 +73,9 @@ function buildScreens(
     screenRefs.get(container)?.onOpenSubScreen?.("settings");
   });
   title.appendChild(settingsBtn);
+  const titleScores = document.createElement("div");
+  titleScores.className = "mc-score-strip";
+  title.appendChild(titleScores);
   const howTo = document.createElement("div");
   howTo.className = "mc-howto";
   const howToHeading = document.createElement("div");
@@ -98,6 +109,9 @@ function buildScreens(
   const gameOverLevel = document.createElement("div");
   gameOverLevel.className = "mc-stat";
   gameOver.appendChild(gameOverLevel);
+  const gameOverScores = document.createElement("div");
+  const initialsHost = document.createElement("div");
+  gameOver.append(gameOverScores, initialsHost);
   const againBtn = makeButton("Play Again", () => {
     screenRefs.get(container)?.onAction({ type: "restart" });
   });
@@ -127,14 +141,19 @@ function buildScreens(
 
   const r: ScreenRefs = {
     title,
+    titleScores,
     levelClear,
     levelClearText,
     gameOver,
     gameOverScore,
     gameOverLevel,
+    gameOverScores,
+    initialsHost,
+    inGameOver: false,
     paused,
     modeSelectHost,
     settingsHost,
+    scores: [],
     onAction,
   };
   screenRefs.set(container, r);
@@ -151,6 +170,8 @@ export function renderScreens(
   onModeSelect?: (mode: GameMode, band: BandName) => void,
   onSettingsChange?: (s: Settings) => void,
   onResetScores?: () => void,
+  scores?: ScoreEntry[],
+  onScoreSave?: (name: string) => void,
 ): void {
   let refs = screenRefs.get(container);
   if (!refs) {
@@ -161,6 +182,8 @@ export function renderScreens(
   refs.onModeSelect = onModeSelect;
   refs.onSettingsChange = onSettingsChange;
   refs.onResetScores = onResetScores;
+  refs.scores = scores ?? [];
+  refs.onScoreSave = onScoreSave;
 
   const ss = subScreen ?? "none";
   const onTitle = state.phase === "title";
@@ -193,12 +216,34 @@ export function renderScreens(
     );
   }
 
+  if (onTitle && ss === "none") {
+    renderScoreList(refs.titleScores, refs.scores.slice(0, 5));
+  }
   if (state.phase === "level-clear") {
     const bonus = 25 + 5 * state.level;
     refs.levelClearText.textContent = `Level Clear! +${bonus}`;
   }
+  const enteringGameOver = state.phase === "game-over" && !refs.inGameOver;
+  refs.inGameOver = state.phase === "game-over";
   if (state.phase === "game-over") {
     refs.gameOverScore.textContent = `Score: ${state.score}`;
     refs.gameOverLevel.textContent = `Level ${state.level}`;
+    if (enteringGameOver) {
+      const fresh = document.createElement("div");
+      refs.initialsHost.replaceWith(fresh);
+      refs.initialsHost = fresh;
+    }
+    const showInitials = refs.onScoreSave !== undefined;
+    refs.initialsHost.classList.toggle("hidden", !showInitials);
+    renderScoreList(refs.gameOverScores, refs.scores);
+    refs.gameOverScores.classList.toggle("hidden", showInitials);
+    if (showInitials) {
+      renderInitialsEntry(refs.initialsHost, (name) => {
+        screenRefs.get(container)?.onScoreSave?.(name);
+      }, state.score, state.level);
+    }
+  } else {
+    refs.initialsHost.classList.add("hidden");
+    refs.gameOverScores.classList.add("hidden");
   }
 }

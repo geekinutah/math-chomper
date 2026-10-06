@@ -1,28 +1,10 @@
 import type { BandName } from "@/content/bands";
 import { GAME_MODES, BAND_CHOICES, type GameMode } from "@/ui/mode-select";
+import { DEFAULT_SETTINGS } from "@/storage";
+import type { Settings, TouchMode } from "@/storage";
 
-export type TouchMode = "always" | "auto";
-
-export interface Settings {
-  band: BandName;
-  modes: Record<GameMode, boolean>;
-  mute: boolean;
-  touch: TouchMode;
-}
-
-export const DEFAULT_SETTINGS: Settings = {
-  band: "standard",
-  modes: {
-    multiples: true,
-    factors: true,
-    primes: true,
-    equality: true,
-    inequality: true,
-    challenge: true,
-  },
-  mute: false,
-  touch: "auto",
-};
+export { DEFAULT_SETTINGS } from "@/storage";
+export type { Settings, TouchMode } from "@/storage";
 
 const TOUCH_MODES: ReadonlyArray<{ id: TouchMode; label: string }> = [
   { id: "always", label: "Always show" },
