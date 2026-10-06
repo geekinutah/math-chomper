@@ -6,7 +6,7 @@ Index only. One line per item. The verifier or critic writes the item file in it
 |---|---|---|---|
 | B-001 | Contract typo: 0÷5 test name | T-003 | open |
 | B-002 | GenConfig operand range: per-op vs uniform | T-005 | open |
-| B-003 | generateBoard: no max-iteration guard | T-006 | open |
+| B-003 | generateBoard: no max-iteration guard | T-006 | resolved (T-029: 1000-draw cap + known-valid fill) |
 | B-004 | Loop createLoop signature: 3 params vs contract 2 | T-007 | open |
 | B-005 | Keyboard param named isPlaying but returns Phase | T-008 | open |
 | B-006 | Game-over "Menu" button dispatches restart | T-010 | open |
@@ -19,6 +19,8 @@ Index only. One line per item. The verifier or critic writes the item file in it
 | B-013 | T-027 contract omits closePath from FakeCtx list | T-027 | open |
 | B-014 | Dev-dependency audit: vitest transitive vulns, unapproved install scripts | T-027 | open |
 | B-015 | Player has no step duration (spec §6: ~140 ms, floor 80 ms) | T-028 | open |
+| B-016 | Duplicated rule-k logic in generateRule/genRule | T-029 | open |
+| B-017 | Fallback/fill expr cells outside band operand grammar | T-029 | open |
 
 States: `open`, `accepted`, `resolved`, `declined`.
 
