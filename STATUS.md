@@ -15,7 +15,7 @@ Ledger for contracted work. The controller updates this file. Other roles do not
 | T-009 | Board Rendering | 3 | done | 1 | — | no |
 | T-010 | HUD + Screens | 3 | done | 1 | — | no |
 | T-011 | Board/Level Mgmt | 3 | done | 1 | — | no |
-| T-012 | Integration (main+index) | 3 | done | 1 | — | pending |
+| T-012 | Integration (main+index) | 3 | done | 1 | — | MET |
 
 States: `todo`, `in progress`, `verifying`, `done`, `blocked`.
 
@@ -25,4 +25,4 @@ None.
 
 ## Spec proposals awaiting Mike
 
-None. A critic proposal stays here until Mike accepts it into `PRODUCT_SPEC.md` or defers it. Gaps and discovered bugs go in `docs/tasks/BACKLOG.md`, not here.
+1. **Remove match-highlight border** (critic Phase 3). The board draws a faint `#1a3a2a` border around cells that match the rule. Critic argues this undermines the core skill (fast recognition) since the player follows the border instead of doing the math. Proposal: render all occupied cells identically; the rule line is the sole indicator. — Awaiting accept/defer.
