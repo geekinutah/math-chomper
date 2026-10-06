@@ -155,3 +155,97 @@ body {
   font-size: 13px;
   color: var(--mc-dim);
 }
+
+/* Sub-screen hosts (mode select, settings) */
+
+.mc-subscreen {
+  position: absolute;
+  inset: 0;
+}
+
+/* Selectable choice buttons (mode grid, band row, settings toggles) */
+
+.mc-choice {
+  background: var(--mc-bg);
+  color: var(--mc-text);
+  border: 2px solid var(--mc-dim);
+  padding: 10px 18px;
+  font-family: inherit;
+  font-size: 14px;
+  cursor: pointer;
+}
+
+.mc-choice:hover {
+  border-color: var(--mc-accent);
+}
+
+.mc-choice.selected {
+  border-color: var(--mc-accent);
+  color: var(--mc-accent);
+  background: rgba(61, 220, 110, 0.12);
+}
+
+/* Mode select */
+
+.mc-mode-grid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 8px;
+  width: 100%;
+  max-width: 480px;
+  margin: 16px 0 8px;
+}
+
+.mc-mode-grid .mc-choice {
+  padding: 12px 8px;
+}
+
+.mc-band-row {
+  display: flex;
+  justify-content: center;
+  gap: 8px;
+  margin-bottom: 16px;
+}
+
+/* Settings */
+
+.mc-set-section {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin: 10px 0;
+}
+
+.mc-set-label {
+  min-width: 64px;
+  text-align: left;
+  font-size: 14px;
+}
+
+.mc-set-body {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.mc-set-modes {
+  display: grid;
+  grid-template-columns: repeat(2, auto);
+  gap: 6px 20px;
+}
+
+.mc-set-modes label {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  cursor: pointer;
+  font-size: 14px;
+}
+
+.mc-set-modes input {
+  accent-color: var(--mc-accent);
+}
+
+.mc-actions {
+  margin-top: 16px;
+}
