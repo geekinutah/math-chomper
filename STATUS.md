@@ -16,6 +16,10 @@ Ledger for contracted work. The controller updates this file. Other roles do not
 | T-010 | HUD + Screens | 3 | done | 1 | — | no |
 | T-011 | Board/Level Mgmt | 3 | done | 1 | — | no |
 | T-012 | Integration (main+index) | 3 | done | 1 | — | MET |
+| T-013 | Enemy Step Functions | 4 | in progress | 1 | ../math-chomper-worktrees/t-013-enemies | no |
+| T-014 | Spawning + Refuge | 4 | in progress | 1 | ../math-chomper-worktrees/t-014-spawn | no |
+| T-015 | Tick + State Extension | 4 | todo | 1 | — | no |
+| T-016 | Enemy + Refuge Rendering | 4 | todo | 1 | — | no |
 
 States: `todo`, `in progress`, `verifying`, `done`, `blocked`.
 
