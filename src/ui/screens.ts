@@ -1,4 +1,9 @@
 import type { Action, GameState } from "@/game/state";
+import type { BandName } from "@/content/bands";
+import { renderModeSelect, type GameMode } from "@/ui/mode-select";
+import { renderSettings, DEFAULT_SETTINGS, type Settings } from "@/ui/settings";
+
+export type SubScreen = "none" | "mode-select" | "settings";
 
 const HOW_TO_PLAY: readonly string[] = [
   "Arrow keys or WASD to move.",
@@ -17,7 +22,13 @@ interface ScreenRefs {
   gameOverScore: HTMLElement;
   gameOverLevel: HTMLElement;
   paused: HTMLElement;
+  modeSelectHost: HTMLElement;
+  settingsHost: HTMLElement;
   onAction: (a: Action) => void;
+  onOpenSubScreen?: (s: SubScreen) => void;
+  onModeSelect?: (mode: GameMode, band: BandName) => void;
+  onSettingsChange?: (s: Settings) => void;
+  onResetScores?: () => void;
 }
 
 const screenRefs = new WeakMap<HTMLElement, ScreenRefs>();
@@ -41,9 +52,19 @@ function buildScreens(
   titleName.textContent = "Math Chomper";
   title.appendChild(titleName);
   const playBtn = makeButton("Play", () => {
-    screenRefs.get(container)?.onAction({ type: "start", mode: "multiples", band: "standard" });
+    const r = screenRefs.get(container);
+    if (!r) return;
+    if (r.onOpenSubScreen) {
+      r.onOpenSubScreen("mode-select");
+    } else {
+      r.onAction({ type: "start", mode: "multiples", band: "standard" });
+    }
   });
   title.appendChild(playBtn);
+  const settingsBtn = makeButton("Settings", () => {
+    screenRefs.get(container)?.onOpenSubScreen?.("settings");
+  });
+  title.appendChild(settingsBtn);
   const howTo = document.createElement("div");
   howTo.className = "mc-howto";
   const howToHeading = document.createElement("div");
@@ -97,7 +118,12 @@ function buildScreens(
   resumeHint.textContent = "Press Esc to resume";
   paused.appendChild(resumeHint);
 
-  container.append(title, levelClear, gameOver, paused);
+  const modeSelectHost = document.createElement("div");
+  modeSelectHost.className = "mc-subscreen hidden";
+  const settingsHost = document.createElement("div");
+  settingsHost.className = "mc-subscreen hidden";
+
+  container.append(title, levelClear, gameOver, paused, modeSelectHost, settingsHost);
 
   const r: ScreenRefs = {
     title,
@@ -107,6 +133,8 @@ function buildScreens(
     gameOverScore,
     gameOverLevel,
     paused,
+    modeSelectHost,
+    settingsHost,
     onAction,
   };
   screenRefs.set(container, r);
@@ -117,22 +145,53 @@ export function renderScreens(
   container: HTMLElement,
   state: GameState,
   onAction: (a: Action) => void,
+  subScreen?: SubScreen,
+  settings?: Settings,
+  onOpenSubScreen?: (s: SubScreen) => void,
+  onModeSelect?: (mode: GameMode, band: BandName) => void,
+  onSettingsChange?: (s: Settings) => void,
+  onResetScores?: () => void,
 ): void {
   let refs = screenRefs.get(container);
   if (!refs) {
     refs = buildScreens(container, onAction);
-  } else {
-    refs.onAction = onAction;
   }
+  refs.onAction = onAction;
+  refs.onOpenSubScreen = onOpenSubScreen;
+  refs.onModeSelect = onModeSelect;
+  refs.onSettingsChange = onSettingsChange;
+  refs.onResetScores = onResetScores;
+
+  const ss = subScreen ?? "none";
+  const onTitle = state.phase === "title";
 
   const show = (el: HTMLElement, visible: boolean): void => {
     el.classList.toggle("hidden", !visible);
   };
 
-  show(refs.title, state.phase === "title");
+  show(refs.title, onTitle && ss === "none");
+  show(refs.modeSelectHost, onTitle && ss === "mode-select");
+  show(refs.settingsHost, onTitle && ss === "settings");
   show(refs.paused, state.phase === "paused");
   show(refs.gameOver, state.phase === "game-over");
   show(refs.levelClear, state.phase === "level-clear");
+
+  if (onTitle && ss === "mode-select") {
+    renderModeSelect(
+      refs.modeSelectHost,
+      (mode, band) => refs.onModeSelect?.(mode, band),
+      () => refs.onOpenSubScreen?.("none"),
+    );
+  }
+  if (onTitle && ss === "settings") {
+    renderSettings(
+      refs.settingsHost,
+      settings ?? DEFAULT_SETTINGS,
+      (s) => refs.onSettingsChange?.(s),
+      () => refs.onResetScores?.(),
+      () => refs.onOpenSubScreen?.("none"),
+    );
+  }
 
   if (state.phase === "level-clear") {
     const bonus = 25 + 5 * state.level;
