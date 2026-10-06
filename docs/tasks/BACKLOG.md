@@ -13,6 +13,9 @@ Index only. One line per item. The verifier or critic writes the item file in it
 | B-007 | generateRule ignores level parameter | T-011 | open |
 | B-008 | Screens container blocks pointer events | T-012 | open |
 | B-009 | Fixed LCG seed makes first board identical | T-012 | open |
+| B-010 | Enemy dedup does not schedule replacement spawn | T-015 | open |
+| B-011 | Local type duplication in spawn.ts | T-014 | open |
+| B-012 | Contract perimeter count error (22 vs 18) | T-014 | open |
 
 States: `open`, `accepted`, `resolved`, `declined`.
 
