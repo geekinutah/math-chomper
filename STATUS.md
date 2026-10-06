@@ -31,8 +31,8 @@ Ledger for contracted work. The controller updates this file. Other roles do not
 | T-025 | High Scores UI | 6 | done | 1 | — | no |
 | T-026 | Phase 6 Integration | 6 | done | 1 | — | yes |
 | T-027 | Remove Match-Highlight Border (critic fix) | 6 | done | 1 | — | no |
-| T-028 | In-Run Ramp (Level 18+) | 6 | in progress | 1 | ../math-chomper-worktrees/t-028-ramp | no |
-| T-029 | Hard Band Larger Expression Results | 6 | todo | 1 | — | no |
+| T-028 | In-Run Ramp (Level 18+) | 6 | done | 1 | — | no |
+| T-029 | Hard Band Larger Expression Results | 6 | in progress | 1 | ../math-chomper-worktrees/t-029-hard-results | no |
 
 States: `todo`, `in progress`, `verifying`, `done`, `blocked`.
 

@@ -18,6 +18,7 @@ Index only. One line per item. The verifier or critic writes the item file in it
 | B-012 | Contract perimeter count error (22 vs 18) | T-014 | open |
 | B-013 | T-027 contract omits closePath from FakeCtx list | T-027 | open |
 | B-014 | Dev-dependency audit: vitest transitive vulns, unapproved install scripts | T-027 | open |
+| B-015 | Player has no step duration (spec §6: ~140 ms, floor 80 ms) | T-028 | open |
 
 States: `open`, `accepted`, `resolved`, `declined`.
 
