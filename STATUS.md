@@ -21,8 +21,8 @@ Ledger for contracted work. The controller updates this file. Other roles do not
 | T-015 | Tick + State Extension | 4 | done | 2 | — | no |
 | T-016 | Enemy + Refuge Rendering | 4 | done | 1 | — | MET |
 | T-017 | Band Content | 5 | done | 1 | — | no |
-| T-018 | State: All Modes + Challenge + Band | 5 | in progress | 1 | ../math-chomper-worktrees/t-018-modes | no |
-| T-019 | Mode Select + Settings UI | 5 | in progress | 1 | ../math-chomper-worktrees/t-019-ui | no |
+| T-018 | State: All Modes + Challenge + Band | 5 | done | 1 | — | no |
+| T-019 | Mode Select + Settings UI | 5 | done | 1 | — | no |
 | T-020 | Integration: Band Spawn + Mode Wiring | 5 | done | 1 | — | MET |
 | T-021 | Rewriter fixes (B-015/B-016) | 5 | done | 1 | — | no |
 | T-022 | Audio Beeps | 6 | done | 2 | — | no |
