@@ -24,7 +24,7 @@ Ledger for contracted work. The controller updates this file. Other roles do not
 | T-018 | State: All Modes + Challenge + Band | 5 | in progress | 1 | ../math-chomper-worktrees/t-018-modes | no |
 | T-019 | Mode Select + Settings UI | 5 | in progress | 1 | ../math-chomper-worktrees/t-019-ui | no |
 | T-020 | Integration: Band Spawn + Mode Wiring | 5 | done | 1 | — | MET |
-| T-021 | Rewriter fixes (B-015/B-016) | 5 | in progress | 1 | ../math-chomper-worktrees/t-021-rewriter | no |
+| T-021 | Rewriter fixes (B-015/B-016) | 5 | done | 1 | — | no |
 
 States: `todo`, `in progress`, `verifying`, `done`, `blocked`.
 
