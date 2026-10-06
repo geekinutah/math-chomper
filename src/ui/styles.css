@@ -3,6 +3,7 @@
   --mc-text: #f4f1e8;
   --mc-accent: #3ddc6e;
   --mc-dim: #2a3a32;
+  --mc-faint: #93a89b;
 }
 
 * {
@@ -246,4 +247,85 @@ body {
 
 .mc-actions {
   margin-top: 16px;
+}
+
+/* High scores */
+
+.mc-score-list {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  margin: 16px 0;
+  padding: 10px 14px;
+  background: rgba(42, 58, 50, 0.3);
+  min-width: 320px;
+  text-align: left;
+}
+
+.mc-score-row {
+  display: grid;
+  grid-template-columns: 24px 1fr 60px 48px 16px;
+  gap: 8px;
+  font-size: 13px;
+}
+
+.mc-score-rank {
+  color: var(--mc-accent);
+}
+
+.mc-score-name {
+  overflow: hidden;
+  white-space: nowrap;
+}
+
+.mc-score-score {
+  text-align: right;
+}
+
+.mc-score-mode,
+.mc-score-band {
+  text-align: right;
+  color: var(--mc-faint);
+}
+
+.mc-score-empty {
+  margin: 16px 0;
+  font-size: 13px;
+  color: var(--mc-faint);
+}
+
+/* Title score strip (top 5, compact) */
+
+.mc-title-scores .mc-score-list {
+  margin: 20px 0 8px;
+  min-width: 280px;
+  padding: 8px 12px;
+}
+
+.mc-title-scores .mc-score-row {
+  font-size: 12px;
+  grid-template-columns: 20px 1fr 52px 44px 14px;
+}
+
+/* Initials entry */
+
+.mc-initials {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 6px;
+  margin: 16px 0;
+}
+
+.mc-initials-input {
+  width: 160px;
+  padding: 8px;
+  background: var(--mc-bg);
+  border: 2px solid var(--mc-accent);
+  color: var(--mc-text);
+  font-family: inherit;
+  font-size: 14px;
+  letter-spacing: 2px;
+  text-transform: uppercase;
+  text-align: center;
 }
