@@ -22,6 +22,7 @@ function makeState(overrides: Partial<GameState> = {}): GameState {
   return {
     phase: "playing",
     mode: "multiples",
+    band: "standard",
     level: 1,
     score: 0,
     lives: 3,

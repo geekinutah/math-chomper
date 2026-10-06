@@ -41,7 +41,7 @@ function buildScreens(
   titleName.textContent = "Math Chomper";
   title.appendChild(titleName);
   const playBtn = makeButton("Play", () => {
-    screenRefs.get(container)?.onAction({ type: "start", mode: "multiples" });
+    screenRefs.get(container)?.onAction({ type: "start", mode: "multiples", band: "standard" });
   });
   title.appendChild(playBtn);
   const howTo = document.createElement("div");

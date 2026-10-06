@@ -1,5 +1,6 @@
 import { describe, it, expect } from "vitest";
 import type { Cell, Rule } from "@/rules/types";
+import { EASY, HARD } from "@/content/bands";
 import { generateRule, generateBoardForRule, countMatches, allMatchesCleared } from "@/game/board";
 
 function seededRng(seed: number): () => number {
@@ -122,5 +123,73 @@ describe("board", () => {
     ];
     const rule: Rule = { mode: "multiples", k: 6 };
     expect(allMatchesCleared(board, rule)).toBe(false);
+  });
+
+  it("generateRule with easy band: k in 2-9", () => {
+    const r = seededRng(123);
+    for (let i = 0; i < 100; i++) {
+      const rule = generateRule("factors", 1, r, EASY);
+      if (rule.mode === "factors") {
+        expect(rule.k).toBeGreaterThanOrEqual(2);
+        expect(rule.k).toBeLessThanOrEqual(9);
+      }
+    }
+  });
+
+  it("generateRule with hard band: k in 2-20", () => {
+    const r = seededRng(456);
+    for (let i = 0; i < 100; i++) {
+      const rule = generateRule("factors", 1, r, HARD);
+      if (rule.mode === "factors") {
+        expect(rule.k).toBeGreaterThanOrEqual(2);
+        expect(rule.k).toBeLessThanOrEqual(20);
+      }
+    }
+  });
+
+  it("generateRule level-scaled: level 1 k ≤ 4", () => {
+    const r = seededRng(555);
+    for (let i = 0; i < 100; i++) {
+      const rule = generateRule("multiples", 1, r);
+      if (rule.mode === "multiples") {
+        expect(rule.k).toBeGreaterThanOrEqual(2);
+        expect(rule.k).toBeLessThanOrEqual(4);
+      }
+    }
+  });
+
+  it("generateBoardForRule with easy: all numbers ≤ 30", () => {
+    const r = seededRng(42);
+    const rule: Rule = { mode: "multiples", k: 6 };
+    const board = generateBoardForRule(rule, r, EASY);
+    expect(board.length).toBe(30);
+    for (const cell of board) {
+      expect(cell.kind).toBe("number");
+      if (cell.kind === "number") expect(cell.value).toBeLessThanOrEqual(30);
+    }
+  });
+
+  it("generateBoardForRule with hard: numbers up to 100", () => {
+    const r = seededRng(99);
+    const rule: Rule = { mode: "multiples", k: 6 };
+    const board = generateBoardForRule(rule, r, HARD);
+    const values = board.flatMap((c) => (c.kind === "number" ? [c.value] : []));
+    expect(values.length).toBeGreaterThan(0);
+    const max = Math.max(...values);
+    expect(max).toBeGreaterThan(30);
+    expect(max).toBeLessThanOrEqual(100);
+  });
+
+  it("generateBoardForRule easy: only + and -", () => {
+    const r = seededRng(77);
+    const rule: Rule = { mode: "equality", k: 6 };
+    const board = generateBoardForRule(rule, r, EASY);
+    for (const cell of board) {
+      expect(cell.kind).toBe("expr");
+      if (cell.kind === "expr") {
+        expect(cell.text).not.toContain("×");
+        expect(cell.text).not.toContain("÷");
+      }
+    }
   });
 });

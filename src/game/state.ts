@@ -1,8 +1,9 @@
 import type { Cell, Mode, Rule } from "@/rules/types";
 import { matches } from "@/rules/match";
-import { generateBoard, type GenConfig } from "@/rules/generate";
+import { generateBoard } from "@/rules/generate";
 import type { Enemy, Refuge } from "@/game/enemies";
 import { handleTick } from "@/game/tick";
+import { getBand, getGenConfig, getKRange, type Band, type BandName } from "@/content/bands";
 
 export const COLS = 6;
 export const ROWS = 5;
@@ -11,10 +12,14 @@ export const BOARD_SIZE = 30;
 export type Dir = "up" | "down" | "left" | "right";
 export type Phase = "title" | "playing" | "level-clear" | "game-over" | "paused";
 export type PlayerPos = { col: number; row: number };
+export type GameMode = Mode | "challenge";
+
+export const CHALLENGE_MODES: readonly Mode[] = ["multiples", "factors", "primes", "equality", "inequality"];
 
 export type GameState = {
   phase: Phase;
-  mode: Mode;
+  mode: GameMode;
+  band: BandName;
   level: number;
   score: number;
   lives: number;
@@ -31,7 +36,7 @@ export type GameState = {
 };
 
 export type Action =
-  | { type: "start"; mode: Mode }
+  | { type: "start"; mode: GameMode; band: BandName }
   | { type: "move"; dir: Dir }
   | { type: "eat" }
   | { type: "tick"; dt: number }
@@ -40,14 +45,6 @@ export type Action =
   | { type: "pause" }
   | { type: "resume" }
   | { type: "restart" };
-
-const GEN_CONFIG: GenConfig = {
-  numMin: 1,
-  numMax: 60,
-  exprOps: ["+", "−", "×", "÷"],
-  exprMin: 0,
-  exprMax: 12,
-};
 
 let lcgState = 1;
 function defaultRng(): number {
@@ -59,8 +56,16 @@ function randomInt(rng: () => number, min: number, max: number): number {
   return min + Math.floor(rng() * (max - min + 1));
 }
 
-function genRule(mode: Mode, rng: () => number): Rule {
-  const k = randomInt(rng, 2, 12);
+function nextChallengeMode(rule: Rule): Mode {
+  const idx = CHALLENGE_MODES.indexOf(rule.mode);
+  return CHALLENGE_MODES[(idx + 1) % CHALLENGE_MODES.length];
+}
+
+function genRule(mode: Mode, level: number, rng: () => number, band: Band): Rule {
+  const { min: kMin, max: kMax } = getKRange(band);
+  // Multiples widens by one per level, capped at the band's k max.
+  const top = mode === "multiples" ? Math.min(kMax, kMin + level + 1) : kMax;
+  const k = randomInt(rng, kMin, top);
   switch (mode) {
     case "primes":
       return { mode };
@@ -89,6 +94,7 @@ export function createInitialState(): GameState {
   return {
     phase: "title",
     mode: "multiples",
+    band: "standard",
     level: 1,
     score: 0,
     lives: 3,
@@ -105,26 +111,18 @@ export function createInitialState(): GameState {
   };
 }
 
-function startGame(state: GameState, mode: Mode, rng: () => number): GameState {
-  const rule = genRule(mode, rng);
-  const board = generateBoard(rule, rng, GEN_CONFIG);
+function startGame(mode: GameMode, bandName: BandName, rng: () => number): GameState {
+  const band = getBand(bandName);
+  const ruleMode = mode === "challenge" ? CHALLENGE_MODES[0] : mode;
+  const rule = genRule(ruleMode, 1, rng, band);
+  const board = generateBoard(rule, rng, getGenConfig(band));
   return {
-    ...state,
+    ...createInitialState(),
     phase: "playing",
     mode,
-    level: 1,
-    score: 0,
-    lives: 3,
-    reserveLives: 0,
-    streak: 0,
-    nextLifeThreshold: 1000,
+    band: bandName,
     rule,
     board,
-    playerPos: CENTER,
-    enemies: [],
-    refuge: null,
-    simTime: 0,
-    freezeTimer: 0,
   };
 }
 
@@ -206,7 +204,7 @@ export function reduce(state: GameState, action: Action, rng?: () => number): Ga
 
   switch (action.type) {
     case "start":
-      return startGame(state, action.mode, r);
+      return startGame(action.mode, action.band, r);
     case "move":
       if (state.phase !== "playing") return state;
       return handleMove(state, action.dir);
@@ -220,8 +218,10 @@ export function reduce(state: GameState, action: Action, rng?: () => number): Ga
       return handleEnemyHit(state, r);
     case "next-level": {
       if (state.phase !== "level-clear") return state;
-      const rule = genRule(state.mode, r);
-      const board = generateBoard(rule, r, GEN_CONFIG);
+      const band = getBand(state.band);
+      const nextMode: Mode = state.mode === "challenge" ? nextChallengeMode(state.rule) : state.mode;
+      const rule = genRule(nextMode, state.level + 1, r, band);
+      const board = generateBoard(rule, r, getGenConfig(band));
       return {
         ...state,
         phase: "playing",
@@ -241,6 +241,6 @@ export function reduce(state: GameState, action: Action, rng?: () => number): Ga
       if (state.phase !== "paused") return state;
       return { ...state, phase: "playing" };
     case "restart":
-      return startGame(state, state.mode, r);
+      return startGame(state.mode, state.band, r);
   }
 }

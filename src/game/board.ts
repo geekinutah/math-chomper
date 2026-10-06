@@ -1,8 +1,9 @@
 import type { Cell, Mode, Rule } from "@/rules/types";
 import { matches } from "@/rules/match";
 import { generateBoard, type GenConfig } from "@/rules/generate";
+import { getGenConfig, getKRange, type Band } from "@/content/bands";
 
-const STANDARD_CONFIG: GenConfig = {
+const DEFAULT_CONFIG: GenConfig = {
   numMin: 1,
   numMax: 60,
   exprOps: ["+", "−", "×", "÷"],
@@ -10,8 +11,13 @@ const STANDARD_CONFIG: GenConfig = {
   exprMax: 12,
 };
 
-export function generateRule(mode: Mode, _level: number, rng: () => number): Rule {
-  const k = 2 + Math.floor(rng() * 11);
+const DEFAULT_K: { min: number; max: number } = { min: 2, max: 12 };
+
+export function generateRule(mode: Mode, level: number, rng: () => number, band?: Band): Rule {
+  const kRange = band ? getKRange(band) : DEFAULT_K;
+  // Multiples widens by one per level, capped at the band's k max.
+  const top = mode === "multiples" ? Math.min(kRange.max, kRange.min + level + 1) : kRange.max;
+  const k = kRange.min + Math.floor(rng() * (top - kRange.min + 1));
   switch (mode) {
     case "primes":
       return { mode };
@@ -26,8 +32,9 @@ export function generateRule(mode: Mode, _level: number, rng: () => number): Rul
   }
 }
 
-export function generateBoardForRule(rule: Rule, rng: () => number): Cell[] {
-  return generateBoard(rule, rng, STANDARD_CONFIG);
+export function generateBoardForRule(rule: Rule, rng: () => number, band?: Band): Cell[] {
+  const config = band ? getGenConfig(band) : DEFAULT_CONFIG;
+  return generateBoard(rule, rng, config);
 }
 
 export function countMatches(board: Cell[], rule: Rule): number {
