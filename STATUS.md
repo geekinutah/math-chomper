@@ -19,7 +19,7 @@ Ledger for contracted work. The controller updates this file. Other roles do not
 | T-013 | Enemy Step Functions | 4 | done | 1 | — | no |
 | T-014 | Spawning + Refuge | 4 | done | 1 | — | no |
 | T-015 | Tick + State Extension | 4 | done | 2 | — | no |
-| T-016 | Enemy + Refuge Rendering | 4 | in progress | 1 | ../math-chomper-worktrees/t-016-render | no |
+| T-016 | Enemy + Refuge Rendering | 4 | done | 1 | — | pending |
 
 States: `todo`, `in progress`, `verifying`, `done`, `blocked`.
 
