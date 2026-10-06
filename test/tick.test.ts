@@ -227,4 +227,85 @@ describe("tick", () => {
       expect(isEdge).toBe(true);
     }
   });
+
+  it("rewriter in equality mode writes an expression", () => {
+    const pos = { col: 0, row: 0 };
+    const board = boardWith(pos, { kind: "expr", text: "3+3", value: 6 });
+    const enemy = makeEnemy({ kind: "rewriter", pos, dir: "right", stepTimer: 420 });
+    const s = makeState({ enemies: [enemy], board, rule: { mode: "equality", k: 6 } });
+    const after = handleTick(s, { type: "tick", dt: 0.5 }, seededRng(1));
+    const leftIdx = pos.row * COLS + pos.col;
+    expect(after.board[leftIdx].kind).toBe("expr");
+  });
+
+  it("rewriter in inequality mode writes an expression", () => {
+    const pos = { col: 0, row: 0 };
+    const board = boardWith(pos, { kind: "expr", text: "3+3", value: 6 });
+    const enemy = makeEnemy({ kind: "rewriter", pos, dir: "right", stepTimer: 420 });
+    const s = makeState({ enemies: [enemy], board, rule: { mode: "inequality", k: 6 } });
+    const after = handleTick(s, { type: "tick", dt: 0.5 }, seededRng(1));
+    const leftIdx = pos.row * COLS + pos.col;
+    expect(after.board[leftIdx].kind).toBe("expr");
+  });
+
+  it("rewriter in multiples mode writes a number", () => {
+    const pos = { col: 0, row: 0 };
+    const board = boardWith(pos, { kind: "number", value: 6 });
+    const enemy = makeEnemy({ kind: "rewriter", pos, dir: "right", stepTimer: 420 });
+    const s = makeState({ enemies: [enemy], board, rule: { mode: "multiples", k: 6 } });
+    const after = handleTick(s, { type: "tick", dt: 0.5 }, seededRng(1));
+    const leftIdx = pos.row * COLS + pos.col;
+    expect(after.board[leftIdx].kind).toBe("number");
+  });
+
+  it("rewriter uses band range: easy numbers ≤ 30", () => {
+    const pos = { col: 0, row: 0 };
+    const board = boardWith(pos, { kind: "number", value: 6 });
+    const enemy = makeEnemy({ kind: "rewriter", pos, dir: "right", stepTimer: 420 });
+    const s = makeState({ enemies: [enemy], board, rule: { mode: "multiples", k: 6 }, band: "easy" });
+    const after = handleTick(s, { type: "tick", dt: 0.5 }, seededRng(1));
+    const leftIdx = pos.row * COLS + pos.col;
+    const cell = after.board[leftIdx];
+    expect(cell.kind).toBe("number");
+    if (cell.kind === "number") {
+      expect(cell.value).toBeGreaterThanOrEqual(1);
+      expect(cell.value).toBeLessThanOrEqual(30);
+    }
+  });
+
+  it("rewriter uses band range: hard numbers can be > 60", () => {
+    const pos = { col: 0, row: 0 };
+    const board = boardWith(pos, { kind: "number", value: 6 });
+    const enemy = makeEnemy({ kind: "rewriter", pos, dir: "right", stepTimer: 420 });
+    const s = makeState({ enemies: [enemy], board, rule: { mode: "multiples", k: 6 }, band: "hard" });
+    const rng = () => 0.99;
+    const after = handleTick(s, { type: "tick", dt: 0.5 }, rng);
+    const leftIdx = pos.row * COLS + pos.col;
+    const cell = after.board[leftIdx];
+    expect(cell.kind).toBe("number");
+    if (cell.kind === "number") {
+      expect(cell.value).toBeLessThanOrEqual(100);
+      expect(cell.value).toBeGreaterThan(60);
+    }
+  });
+
+  it("rewriter clearing last match triggers level-clear", () => {
+    const pos = { col: 0, row: 0 };
+    const board = boardWith(pos, { kind: "number", value: 6 });
+    const enemy = makeEnemy({ kind: "rewriter", pos, dir: "right", stepTimer: 420 });
+    const s = makeState({ enemies: [enemy], board, rule: { mode: "multiples", k: 6 } });
+    const rng = () => 0.5;
+    const after = handleTick(s, { type: "tick", dt: 0.5 }, rng);
+    expect(after.phase).toBe("level-clear");
+  });
+
+  it("rewriter writing a match does not clear", () => {
+    const pos = { col: 0, row: 0 };
+    const board = boardWith(pos, { kind: "number", value: 6 });
+    const enemy = makeEnemy({ kind: "rewriter", pos, dir: "right", stepTimer: 420 });
+    const s = makeState({ enemies: [enemy], board, rule: { mode: "multiples", k: 6 } });
+    const rng = () => 0.09;
+    const after = handleTick(s, { type: "tick", dt: 0.5 }, rng);
+    expect(after.phase).toBe("playing");
+  });
 });

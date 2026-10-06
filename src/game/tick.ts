@@ -6,7 +6,9 @@ import { spawnEnemy, spawnRefuge, enemyCap } from "./spawn";
 import { allMatchesCleared } from "./board";
 import { matches } from "@/rules/match";
 import type { Cell, Rule } from "@/rules/types";
-import { getBand, getEnemyKinds, type BandName } from "@/content/bands";
+import { getBand, getGenConfig, getEnemyKinds, type BandName } from "@/content/bands";
+import { formatExpr, evalExpr } from "@/rules/expr";
+import type { GenConfig } from "@/rules/generate";
 
 const STEP_MS = 420;
 
@@ -14,14 +16,34 @@ function cellIdx(pos: { col: number; row: number }): number {
   return pos.row * COLS + pos.col;
 }
 
-function genRewriteCell(rule: Rule, rng: () => number): Cell {
+function genRewriteNumber(config: GenConfig, rng: () => number): Cell {
+  const value = Math.max(1, config.numMin + Math.floor(rng() * (config.numMax - config.numMin + 1)));
+  return { kind: "number", value };
+}
+
+function genRewriteExpr(config: GenConfig, rng: () => number): Cell {
+  for (let i = 0; i < 4; i++) {
+    const op = config.exprOps[Math.floor(rng() * config.exprOps.length)];
+    const a = config.exprMin + Math.floor(rng() * (config.exprMax - config.exprMin + 1));
+    const b = config.exprMin + Math.floor(rng() * (config.exprMax - config.exprMin + 1));
+    const text = formatExpr(a, op, b);
+    const value = evalExpr(text);
+    if (value !== null) return { kind: "expr", text, value };
+  }
+  const a = config.exprMin + Math.floor(rng() * (config.exprMax - config.exprMin + 1));
+  const b = config.exprMin + Math.floor(rng() * (config.exprMax - config.exprMin + 1));
+  const text = formatExpr(a, "+", b);
+  return { kind: "expr", text, value: a + b };
+}
+
+function genRewriteCell(rule: Rule, config: GenConfig, rng: () => number): Cell {
   const wantMatch = rng() < 0.3;
-  for (let i = 0; i < 20; i++) {
-    const value = 1 + Math.floor(rng() * 60);
-    const cell: Cell = { kind: "number", value };
+  const useExpr = rule.mode === "equality" || rule.mode === "inequality";
+  for (let i = 0; i < 3; i++) {
+    const cell = useExpr ? genRewriteExpr(config, rng) : genRewriteNumber(config, rng);
     if (matches(rule, cell) === wantMatch) return cell;
   }
-  return { kind: "number", value: 1 + Math.floor(rng() * 60) };
+  return useExpr ? genRewriteExpr(config, rng) : genRewriteNumber(config, rng);
 }
 
 function pickEnemyKind(bandName: BandName, level: number, rng: () => number): EnemyKind {
@@ -52,6 +74,7 @@ export function handleTick(
   let simTime = state.simTime + dtMs;
   let freezeTimer = state.freezeTimer;
   let phase: Phase = state.phase;
+  let score = state.score;
   let newBoard = state.board;
   let refuge = state.refuge;
 
@@ -82,6 +105,7 @@ export function handleTick(
         newBoard[idx] = { kind: "empty" };
         if (allMatchesCleared(newBoard, state.rule)) {
           phase = "level-clear";
+          score += 25 + 5 * state.level;
         }
       }
     }
@@ -89,7 +113,12 @@ export function handleTick(
     if (e.kind === "rewriter" && !sameCell(oldPos, newPos)) {
       const idx = cellIdx(oldPos);
       newBoard = [...newBoard];
-      newBoard[idx] = genRewriteCell(state.rule, rng);
+      const config = getGenConfig(getBand(state.band));
+      newBoard[idx] = genRewriteCell(state.rule, config, rng);
+      if (allMatchesCleared(newBoard, state.rule)) {
+        phase = "level-clear";
+        score += 25 + 5 * state.level;
+      }
     }
 
     if (refuge && sameCell(newPos, refuge.pos)) {
@@ -154,6 +183,7 @@ export function handleTick(
     simTime,
     freezeTimer,
     phase,
+    score,
     board: newBoard,
     enemies: deduped,
     refuge,
