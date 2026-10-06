@@ -1,0 +1,94 @@
+/* Touch controls: d-pad bottom-left, eat button bottom-right.
+   Fixed layer under the screens overlay (z-index 10); never blocks the canvas. */
+
+.mc-touch {
+  position: fixed;
+  inset: 0;
+  z-index: 5;
+  pointer-events: none;
+  display: none;
+}
+
+.mc-touch.touch-visible {
+  display: block;
+}
+
+.mc-dpad {
+  position: fixed;
+  left: 16px;
+  bottom: 16px;
+  display: grid;
+  grid-template-columns: repeat(3, 60px);
+  grid-template-rows: repeat(3, 60px);
+  pointer-events: none;
+}
+
+.mc-dpad-btn {
+  pointer-events: auto;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 60px;
+  height: 60px;
+  font-size: 22px;
+  color: var(--mc-text);
+  background: rgba(61, 220, 110, 0.18);
+  border: 2px solid rgba(61, 220, 110, 0.5);
+  border-radius: 12px;
+  user-select: none;
+  -webkit-user-select: none;
+  touch-action: none;
+}
+
+.mc-dpad-btn:active {
+  background: rgba(61, 220, 110, 0.4);
+}
+
+.mc-dpad-up {
+  grid-row: 1;
+  grid-column: 2;
+}
+
+.mc-dpad-left {
+  grid-row: 2;
+  grid-column: 1;
+}
+
+.mc-dpad-down {
+  grid-row: 2;
+  grid-column: 2;
+}
+
+.mc-dpad-right {
+  grid-row: 2;
+  grid-column: 3;
+}
+
+.mc-eat-btn {
+  position: fixed;
+  right: 20px;
+  bottom: 28px;
+  width: 80px;
+  height: 80px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  pointer-events: auto;
+  font-size: 18px;
+  font-weight: bold;
+  color: var(--mc-bg);
+  background: var(--mc-accent);
+  border: 3px solid rgba(61, 220, 110, 0.7);
+  user-select: none;
+  -webkit-user-select: none;
+  touch-action: none;
+}
+
+.mc-eat-btn:active {
+  background: #2fb85a;
+}
+
+#board {
+  touch-action: none;
+}
