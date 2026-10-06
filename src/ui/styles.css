@@ -1,0 +1,157 @@
+:root {
+  --mc-bg: #0d1110;
+  --mc-text: #f4f1e8;
+  --mc-accent: #3ddc6e;
+  --mc-dim: #2a3a32;
+}
+
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+body {
+  background: var(--mc-bg);
+  color: var(--mc-text);
+  font-family: ui-monospace, "SF Mono", "Cascadia Code", Menlo, monospace;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  min-height: 100vh;
+}
+
+.hidden {
+  display: none !important;
+}
+
+/* HUD bar */
+
+.hud {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  width: 100%;
+  max-width: 960px;
+  padding: 8px 16px;
+  font-size: 14px;
+}
+
+.hud-level {
+  min-width: 80px;
+}
+
+.hud-rule {
+  flex: 1;
+  text-align: center;
+  color: var(--mc-accent);
+  font-weight: bold;
+}
+
+.hud-score {
+  min-width: 120px;
+  text-align: right;
+}
+
+.hud-lives {
+  display: flex;
+  gap: 4px;
+  min-width: 80px;
+  justify-content: flex-end;
+}
+
+.life {
+  display: inline-block;
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+}
+
+.life.filled {
+  background: var(--mc-accent);
+}
+
+.life.outline {
+  background: transparent;
+  border: 1px solid var(--mc-accent);
+}
+
+/* Screens */
+
+.screen {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  background: rgba(13, 17, 16, 0.92);
+  z-index: 10;
+  padding: 24px;
+  text-align: center;
+}
+
+.mc-title {
+  font-size: 32px;
+  color: var(--mc-accent);
+  margin-bottom: 24px;
+  letter-spacing: 2px;
+}
+
+.mc-btn {
+  background: var(--mc-bg);
+  color: var(--mc-text);
+  border: 2px solid var(--mc-accent);
+  padding: 10px 24px;
+  font-family: inherit;
+  font-size: 14px;
+  cursor: pointer;
+  margin: 4px;
+}
+
+.mc-btn:hover {
+  background: var(--mc-accent);
+  color: var(--mc-bg);
+}
+
+.mc-howto {
+  margin-top: 24px;
+  text-align: left;
+  font-size: 13px;
+}
+
+.mc-howto-lines {
+  list-style: none;
+  padding: 0;
+}
+
+.mc-howto-lines li {
+  padding: 2px 0;
+}
+
+.mc-clear-text {
+  font-size: 24px;
+  color: var(--mc-accent);
+}
+
+.mc-overline {
+  font-size: 28px;
+  margin-bottom: 12px;
+}
+
+.mc-stat {
+  font-size: 16px;
+  margin: 4px 0;
+}
+
+.mc-paused-text {
+  font-size: 28px;
+  color: var(--mc-accent);
+}
+
+.mc-hint {
+  margin-top: 12px;
+  font-size: 13px;
+  color: var(--mc-dim);
+}
