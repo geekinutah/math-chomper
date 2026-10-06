@@ -1,6 +1,8 @@
 import type { Cell, Mode, Rule } from "@/rules/types";
 import { matches } from "@/rules/match";
 import { generateBoard, type GenConfig } from "@/rules/generate";
+import type { Enemy, Refuge } from "@/game/enemies";
+import { handleTick } from "@/game/tick";
 
 export const COLS = 6;
 export const ROWS = 5;
@@ -22,6 +24,10 @@ export type GameState = {
   rule: Rule;
   board: Cell[];
   playerPos: PlayerPos;
+  enemies: Enemy[];
+  refuge: Refuge | null;
+  simTime: number;
+  freezeTimer: number;
 };
 
 export type Action =
@@ -29,6 +35,7 @@ export type Action =
   | { type: "move"; dir: Dir }
   | { type: "eat" }
   | { type: "tick"; dt: number }
+  | { type: "enemy-hit" }
   | { type: "next-level" }
   | { type: "pause" }
   | { type: "resume" }
@@ -91,6 +98,10 @@ export function createInitialState(): GameState {
     rule: { mode: "multiples", k: 3 },
     board: freshBoard(),
     playerPos: CENTER,
+    enemies: [],
+    refuge: null,
+    simTime: 0,
+    freezeTimer: 0,
   };
 }
 
@@ -110,6 +121,10 @@ function startGame(state: GameState, mode: Mode, rng: () => number): GameState {
     rule,
     board,
     playerPos: CENTER,
+    enemies: [],
+    refuge: null,
+    simTime: 0,
+    freezeTimer: 0,
   };
 }
 
@@ -170,6 +185,22 @@ function handleEat(state: GameState): GameState {
   return { ...state, board, lives, streak: 0, phase };
 }
 
+export function handleEnemyHit(state: GameState, rng: () => number): GameState {
+  const lives = state.lives - 1;
+  if (lives <= 0) {
+    return { ...state, lives: 0, streak: 0, freezeTimer: 700, phase: "game-over" };
+  }
+  const blocked = new Set<string>();
+  for (const e of state.enemies) blocked.add(`${e.pos.col},${e.pos.row}`);
+  if (state.refuge) blocked.add(`${state.refuge.pos.col},${state.refuge.pos.row}`);
+  const cells: PlayerPos[] = [];
+  for (let r = 0; r < ROWS; r++)
+    for (let c = 0; c < COLS; c++)
+      if (!blocked.has(`${c},${r}`)) cells.push({ col: c, row: r });
+  const pos = cells.length > 0 ? cells[Math.floor(rng() * cells.length)] : CENTER;
+  return { ...state, lives, streak: 0, freezeTimer: 700, playerPos: pos };
+}
+
 export function reduce(state: GameState, action: Action, rng?: () => number): GameState {
   const r = rng ?? defaultRng;
 
@@ -183,7 +214,10 @@ export function reduce(state: GameState, action: Action, rng?: () => number): Ga
       if (state.phase !== "playing") return state;
       return handleEat(state);
     case "tick":
-      return state;
+      return handleTick(state, action, r);
+    case "enemy-hit":
+      if (state.phase !== "playing") return state;
+      return handleEnemyHit(state, r);
     case "next-level": {
       if (state.phase !== "level-clear") return state;
       const rule = genRule(state.mode, r);
@@ -196,6 +230,8 @@ export function reduce(state: GameState, action: Action, rng?: () => number): Ga
         board,
         playerPos: CENTER,
         streak: 0,
+        enemies: [],
+        refuge: null,
       };
     }
     case "pause":

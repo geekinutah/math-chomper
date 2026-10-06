@@ -1,5 +1,6 @@
 import { describe, it, expect } from "vitest";
 import type { Cell } from "@/rules/types";
+import type { Enemy } from "@/game/enemies";
 import {
   createInitialState,
   reduce,
@@ -34,6 +35,10 @@ function makePlayingState(overrides: Partial<GameState> = {}): GameState {
     rule: { mode: "multiples", k: 6 },
     board: emptyBoard(),
     playerPos: { col: 2, row: 2 },
+    enemies: [],
+    refuge: null,
+    simTime: 0,
+    freezeTimer: 0,
     ...overrides,
   };
 }
@@ -231,7 +236,6 @@ describe("state", () => {
 
     const s3 = makePlayingState({ board, score: 1995, reserveLives: 0, nextLifeThreshold: 2000, streak: 50 });
     const after3 = reduce(s3, { type: "eat" }, rng);
-    // 1995 + 15 = 2010, crosses 2000 threshold once
     expect(after3.reserveLives).toBe(1);
     expect(after3.nextLifeThreshold).toBe(3000);
   });
@@ -261,5 +265,51 @@ describe("state", () => {
     expect(after.streak).toBe(2);
     expect(after.lives).toBe(3);
     expect(after.phase).toBe("playing");
+  });
+
+  it("enemy-hit reduces lives", () => {
+    const enemy: Enemy = { id: 1, kind: "straight", pos: { col: 3, row: 2 }, dir: "right", stepTimer: 420 };
+    const s = makePlayingState({ lives: 3, enemies: [enemy] });
+    const after = reduce(s, { type: "enemy-hit" }, rng);
+    expect(after.lives).toBe(2);
+  });
+
+  it("enemy-hit resets streak", () => {
+    const enemy: Enemy = { id: 1, kind: "straight", pos: { col: 3, row: 2 }, dir: "right", stepTimer: 420 };
+    const s = makePlayingState({ streak: 5, enemies: [enemy] });
+    const after = reduce(s, { type: "enemy-hit" }, rng);
+    expect(after.streak).toBe(0);
+  });
+
+  it("enemy-hit at 0 lives triggers game-over", () => {
+    const enemy: Enemy = { id: 1, kind: "straight", pos: { col: 3, row: 2 }, dir: "right", stepTimer: 420 };
+    const s = makePlayingState({ lives: 1, enemies: [enemy] });
+    const after = reduce(s, { type: "enemy-hit" }, rng);
+    expect(after.phase).toBe("game-over");
+    expect(after.lives).toBe(0);
+  });
+
+  it("enemy-hit sets freezeTimer to 700", () => {
+    const enemy: Enemy = { id: 1, kind: "straight", pos: { col: 3, row: 2 }, dir: "right", stepTimer: 420 };
+    const s = makePlayingState({ enemies: [enemy] });
+    const after = reduce(s, { type: "enemy-hit" }, rng);
+    expect(after.freezeTimer).toBe(700);
+  });
+
+  it("enemy-hit respawns player to non-enemy cell", () => {
+    const enemy: Enemy = { id: 1, kind: "straight", pos: { col: 3, row: 2 }, dir: "right", stepTimer: 420 };
+    const s = makePlayingState({ playerPos: { col: 3, row: 2 }, enemies: [enemy] });
+    const after = reduce(s, { type: "enemy-hit" }, rng);
+    expect(after.playerPos).not.toEqual({ col: 3, row: 2 });
+  });
+
+  it("initial state has empty enemies", () => {
+    const s = createInitialState();
+    expect(s.enemies).toHaveLength(0);
+  });
+
+  it("initial state has no refuge", () => {
+    const s = createInitialState();
+    expect(s.refuge).toBeNull();
   });
 });

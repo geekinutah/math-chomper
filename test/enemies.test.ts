@@ -38,8 +38,12 @@ function makeState(overrides: Partial<GameState> = {}): TestState {
     rule: { mode: "multiples", k: 3 },
     board: emptyBoard(),
     playerPos: { col: 2, row: 2 },
+    enemies: [],
+    refuge: undefined as unknown as Refuge | null,
+    simTime: 0,
+    freezeTimer: 0,
     ...overrides,
-  };
+  } as TestState;
 }
 
 function makeEnemy(
