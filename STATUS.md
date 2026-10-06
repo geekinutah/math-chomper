@@ -15,7 +15,7 @@ Ledger for contracted work. The controller updates this file. Other roles do not
 | T-009 | Board Rendering | 3 | done | 1 | — | no |
 | T-010 | HUD + Screens | 3 | done | 1 | — | no |
 | T-011 | Board/Level Mgmt | 3 | done | 1 | — | no |
-| T-012 | Integration (main+index) | 3 | in progress | 1 | ../math-chomper-worktrees/t-012-integration | yes |
+| T-012 | Integration (main+index) | 3 | done | 1 | — | pending |
 
 States: `todo`, `in progress`, `verifying`, `done`, `blocked`.
 

@@ -11,6 +11,8 @@ Index only. One line per item. The verifier or critic writes the item file in it
 | B-005 | Keyboard param named isPlaying but returns Phase | T-008 | open |
 | B-006 | Game-over "Menu" button dispatches restart | T-010 | open |
 | B-007 | generateRule ignores level parameter | T-011 | open |
+| B-008 | Screens container blocks pointer events | T-012 | open |
+| B-009 | Fixed LCG seed makes first board identical | T-012 | open |
 
 States: `open`, `accepted`, `resolved`, `declined`.
 
