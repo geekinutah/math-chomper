@@ -1,7 +1,6 @@
 import type { GameState } from "@/game/state";
 import { COLS, ROWS } from "@/game/state";
-import type { Cell, Rule } from "@/rules/types";
-import { matches } from "@/rules/match";
+import type { Cell } from "@/rules/types";
 import { drawPlayer, drawEnemy, drawRefuge } from "./sprites";
 
 export function createBoardCanvas(canvas: HTMLCanvasElement): void {
@@ -23,7 +22,6 @@ const CELL = 100;
 const BG = "#0d1110";
 const GRID_LINE = "#2a3a32";
 const TEXT = "#f4f1e8";
-const MATCH_BORDER = "#1a3a2a";
 
 function cellRect(col: number, row: number): { x: number; y: number } {
   return { x: GRID_X + col * CELL, y: GRID_Y + row * CELL };
@@ -50,16 +48,10 @@ function drawGrid(ctx: CanvasRenderingContext2D): void {
   }
 }
 
-function drawCell(ctx: CanvasRenderingContext2D, rule: Rule, cell: Cell, col: number, row: number): void {
+function drawCell(ctx: CanvasRenderingContext2D, cell: Cell, col: number, row: number): void {
   const { x, y } = cellRect(col, row);
   const cx = x + CELL / 2;
   const cy = y + CELL / 2;
-
-  if (matches(rule, cell)) {
-    ctx.strokeStyle = MATCH_BORDER;
-    ctx.lineWidth = 3;
-    ctx.strokeRect(x + 2.5, y + 2.5, CELL - 5, CELL - 5);
-  }
 
   ctx.fillStyle = TEXT;
   ctx.textAlign = "center";
@@ -81,7 +73,7 @@ export function renderBoard(ctx: CanvasRenderingContext2D, state: GameState): vo
     for (let col = 0; col < COLS; col++) {
       const cell = state.board[row * COLS + col];
       if (cell.kind === "empty") continue;
-      drawCell(ctx, state.rule, cell, col, row);
+      drawCell(ctx, cell, col, row);
     }
   }
   const { x, y } = cellRect(state.playerPos.col, state.playerPos.row);
