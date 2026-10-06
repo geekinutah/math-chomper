@@ -1,20 +1,8 @@
-import type { GameState, PlayerPos, Dir } from "@/game/state";
+import type { GameState, PlayerPos } from "@/game/state";
 import { COLS, ROWS } from "@/game/state";
+import type { Enemy, EnemyKind, Refuge } from "./enemies";
 
-// Types also defined in enemies.ts (T-013). After merge, this file imports from enemies.ts.
-export type EnemyKind = "straight" | "shy" | "eater" | "rewriter" | "chaser";
-
-export type Enemy = {
-  kind: EnemyKind;
-  pos: PlayerPos;
-  dir: Dir;
-  stepTimer: number;
-};
-
-export type Refuge = {
-  pos: PlayerPos;
-  expiresAt: number;
-};
+export type { Enemy, EnemyKind, Refuge };
 
 export type SpawnState = {
   phase: GameState["phase"];
@@ -89,7 +77,7 @@ export function spawnEnemy(kind: EnemyKind, state: SpawnState, rng: () => number
   const pos = pickRandom(edges, rng);
   if (!pos) return null;
 
-  return { kind, pos, dir: "down", stepTimer: ENEMY_STEP_MS };
+  return { id: 0, kind, pos, dir: "down", stepTimer: ENEMY_STEP_MS };
 }
 
 export function spawnRefuge(state: SpawnState, simTime: number, rng: () => number): Refuge | null {
