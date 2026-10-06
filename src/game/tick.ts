@@ -2,15 +2,13 @@ import type { GameState, Phase } from "./state";
 import { COLS, handleEnemyHit } from "./state";
 import type { Enemy, EnemyKind } from "./enemies";
 import { stepEnemy, sameCell } from "./enemies";
-import { spawnEnemy, spawnRefuge, enemyCap } from "./spawn";
+import { spawnEnemy, spawnRefuge, enemyCap, enemyStepDelay, refugeSpawnChance } from "./spawn";
 import { allMatchesCleared } from "./board";
 import { matches } from "@/rules/match";
 import type { Cell, Rule } from "@/rules/types";
 import { getBand, getGenConfig, getEnemyKinds, type BandName } from "@/content/bands";
 import { formatExpr, evalExpr } from "@/rules/expr";
 import type { GenConfig } from "@/rules/generate";
-
-const STEP_MS = 420;
 
 function cellIdx(pos: { col: number; row: number }): number {
   return pos.row * COLS + pos.col;
@@ -126,7 +124,7 @@ export function handleTick(
     } else {
       e.pos = newPos;
     }
-    e.stepTimer = STEP_MS;
+    e.stepTimer = enemyStepDelay(state.level);
     newEnemies.push(e);
   }
 
@@ -156,7 +154,7 @@ export function handleTick(
     refuge = null;
   }
 
-  if (!refuge && rng() < 0.003) {
+  if (!refuge && rng() < refugeSpawnChance(state.level)) {
     const newRefuge = spawnRefuge(state, simTime, rng);
     if (newRefuge) {
       refuge = newRefuge;

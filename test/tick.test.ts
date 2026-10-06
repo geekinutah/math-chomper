@@ -133,6 +133,24 @@ describe("tick", () => {
     expect(after.board[leftIdx].kind).not.toBe("empty");
   });
 
+  it("tick at level 20 resets stepTimer to 258", () => {
+    const enemy = makeEnemy({ pos: { col: 0, row: 0 }, dir: "right", stepTimer: 420 });
+    const s = makeState({ enemies: [enemy], level: 20 });
+    // 0.002 equals the enemy-spawn threshold (fails it) and the ramped refuge threshold (fails it)
+    const noSpawns = () => 0.002;
+    const after = handleTick(s, { type: "tick", dt: 0.5 }, noSpawns);
+    expect(after.enemies[0].stepTimer).toBe(258);
+  });
+
+  it("refuge roll 0.002 spawns at L17, not at L18", () => {
+    // constant 0.002 rng: below 0.003 (L17) but above 0.0015 (L18); equals the 0.002 enemy-spawn threshold so no enemy spawns
+    const constant = () => 0.002;
+    const after17 = handleTick(makeState({ level: 17 }), { type: "tick", dt: 1 }, constant);
+    expect(after17.refuge).not.toBeNull();
+    const after18 = handleTick(makeState({ level: 18 }), { type: "tick", dt: 1 }, constant);
+    expect(after18.refuge).toBeNull();
+  });
+
   it("refuge expires after duration", () => {
     const s = makeState({
       refuge: { pos: { col: 0, row: 0 }, expiresAt: 100 },

@@ -2,9 +2,11 @@ import { describe, it, expect } from "vitest";
 import { createInitialState, COLS, ROWS, type GameState, type PlayerPos } from "@/game/state";
 import {
   enemyCap,
+  enemyStepDelay,
   spawnEnemy,
   spawnRefuge,
   refugeDuration,
+  refugeSpawnChance,
   edgeCells,
   type EnemyKind,
   type SpawnState,
@@ -56,6 +58,38 @@ describe("enemyCap", () => {
     expect(enemyCap(8)).toBe(3);
     expect(enemyCap(9)).toBe(3);
     expect(enemyCap(20)).toBe(3);
+  });
+});
+
+describe("enemyStepDelay", () => {
+  it("levels 1-17 -> 420", () => {
+    for (let level = 1; level <= 17; level++) {
+      expect(enemyStepDelay(level)).toBe(420);
+    }
+  });
+
+  it("level 18 -> 357", () => {
+    expect(enemyStepDelay(18)).toBe(357);
+  });
+
+  it("19 -> 303, 20 -> 258, 21 -> 219, 22 -> 186", () => {
+    expect(enemyStepDelay(19)).toBe(303);
+    expect(enemyStepDelay(20)).toBe(258);
+    expect(enemyStepDelay(21)).toBe(219);
+    expect(enemyStepDelay(22)).toBe(186);
+  });
+
+  it("level 23+ -> 180", () => {
+    expect(enemyStepDelay(23)).toBe(180);
+    expect(enemyStepDelay(30)).toBe(180);
+    expect(enemyStepDelay(100)).toBe(180);
+  });
+});
+
+describe("refugeSpawnChance", () => {
+  it("17 -> 0.003, 18 -> 0.0015", () => {
+    expect(refugeSpawnChance(17)).toBe(0.003);
+    expect(refugeSpawnChance(18)).toBe(0.0015);
   });
 });
 
@@ -149,6 +183,15 @@ describe("spawnEnemy", () => {
     expect(enemy).not.toBeNull();
     if (enemy) {
       expect(enemy.stepTimer).toBe(420);
+    }
+  });
+
+  it("stepTimer is 258 at level 20", () => {
+    const state = makeState({ level: 20 });
+    const enemy = spawnEnemy("shy", state, seededRng(22));
+    expect(enemy).not.toBeNull();
+    if (enemy) {
+      expect(enemy.stepTimer).toBe(258);
     }
   });
 });

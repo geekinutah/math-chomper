@@ -21,7 +21,20 @@ export type SpawnState = {
   blockedCells?: PlayerPos[];
 };
 
-const ENEMY_STEP_MS = 420;
+const BASE_ENEMY_STEP_MS = 420;
+const MIN_ENEMY_STEP_MS = 180;
+const RAMP_LEVEL = 18;
+const RAMP_FACTOR = 0.85;
+
+export function enemyStepDelay(level: number): number {
+  if (level < RAMP_LEVEL) return BASE_ENEMY_STEP_MS;
+  const ms = BASE_ENEMY_STEP_MS * RAMP_FACTOR ** (level - RAMP_LEVEL + 1);
+  return Math.max(MIN_ENEMY_STEP_MS, Math.round(ms));
+}
+
+export function refugeSpawnChance(level: number): number {
+  return level >= RAMP_LEVEL ? 0.0015 : 0.003;
+}
 
 export function enemyCap(level: number): number {
   if (level >= 8) return 3;
@@ -77,7 +90,7 @@ export function spawnEnemy(kind: EnemyKind, state: SpawnState, rng: () => number
   const pos = pickRandom(edges, rng);
   if (!pos) return null;
 
-  return { id: 0, kind, pos, dir: "down", stepTimer: ENEMY_STEP_MS };
+  return { id: 0, kind, pos, dir: "down", stepTimer: enemyStepDelay(state.level) };
 }
 
 export function spawnRefuge(state: SpawnState, simTime: number, rng: () => number): Refuge | null {
