@@ -5,6 +5,7 @@ Index only. One line per item. The verifier or critic writes the item file in it
 | Id | Title | Found during | State |
 |---|---|---|---|
 | B-001 | Contract typo: 0÷5 test name | T-003 | open |
+| B-002 | GenConfig operand range: per-op vs uniform | T-005 | open |
 
 States: `open`, `accepted`, `resolved`, `declined`.
 
