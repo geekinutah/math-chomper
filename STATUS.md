@@ -33,6 +33,8 @@ Ledger for contracted work. The controller updates this file. Other roles do not
 | T-027 | Remove Match-Highlight Border (critic fix) | 6 | done | 1 | — | no |
 | T-028 | In-Run Ramp (Level 18+) | 6 | done | 1 | — | no |
 | T-029 | Hard Band Larger Expression Results | 6 | done | 1 | — | no |
+| T-030 | Player Step Duration + Input Buffer (B-015) | 6 | in progress | 1 | ../math-chomper-worktrees/t-030-player-step | yes |
+| T-031 | Dev-Dependency Audit Fix (B-014) | — | in progress | 1 | ../math-chomper-worktrees/t-031-dev-deps | no |
 
 States: `todo`, `in progress`, `verifying`, `done`, `blocked`.
 
