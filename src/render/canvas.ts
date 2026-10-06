@@ -2,7 +2,7 @@ import type { GameState } from "@/game/state";
 import { COLS, ROWS } from "@/game/state";
 import type { Cell, Rule } from "@/rules/types";
 import { matches } from "@/rules/match";
-import { drawPlayer } from "./sprites";
+import { drawPlayer, drawEnemy, drawRefuge } from "./sprites";
 
 export function createBoardCanvas(canvas: HTMLCanvasElement): void {
   canvas.width = 960;
@@ -86,4 +86,12 @@ export function renderBoard(ctx: CanvasRenderingContext2D, state: GameState): vo
   }
   const { x, y } = cellRect(state.playerPos.col, state.playerPos.row);
   drawPlayer(ctx, x, y, CELL);
+  for (const enemy of state.enemies) {
+    const er = cellRect(enemy.pos.col, enemy.pos.row);
+    drawEnemy(ctx, enemy.kind, er.x, er.y, CELL);
+  }
+  if (state.refuge) {
+    const rr = cellRect(state.refuge.pos.col, state.refuge.pos.row);
+    drawRefuge(ctx, rr.x, rr.y, CELL);
+  }
 }
