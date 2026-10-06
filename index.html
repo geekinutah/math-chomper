@@ -4,9 +4,33 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Math Chomper</title>
+    <link rel="stylesheet" href="/src/ui/styles.css" />
+    <style>
+      #game {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+      }
+      #board-wrap {
+        position: relative;
+      }
+      #board {
+        display: block;
+      }
+      #screens {
+        position: absolute;
+        inset: 0;
+      }
+    </style>
   </head>
   <body>
-    <canvas></canvas>
+    <div id="game">
+      <div id="hud" class="hud"></div>
+      <div id="board-wrap">
+        <canvas id="board"></canvas>
+        <div id="screens"></div>
+      </div>
+    </div>
     <script type="module" src="/src/main.ts"></script>
   </body>
 </html>
