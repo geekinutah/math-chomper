@@ -23,7 +23,8 @@ Ledger for contracted work. The controller updates this file. Other roles do not
 | T-017 | Band Content | 5 | done | 1 | — | no |
 | T-018 | State: All Modes + Challenge + Band | 5 | in progress | 1 | ../math-chomper-worktrees/t-018-modes | no |
 | T-019 | Mode Select + Settings UI | 5 | in progress | 1 | ../math-chomper-worktrees/t-019-ui | no |
-| T-020 | Integration: Band Spawn + Mode Wiring | 5 | todo | 1 | — | yes |
+| T-020 | Integration: Band Spawn + Mode Wiring | 5 | done | 1 | — | MET |
+| T-021 | Rewriter fixes (B-015/B-016) | 5 | in progress | 1 | ../math-chomper-worktrees/t-021-rewriter | no |
 
 States: `todo`, `in progress`, `verifying`, `done`, `blocked`.
 
@@ -35,3 +36,5 @@ None.
 
 1. **Remove match-highlight border** (critic Phase 3). The board draws a faint `#1a3a2a` border around cells that match the rule. Critic argues this undermines the core skill (fast recognition) since the player follows the border instead of doing the math. Proposal: render all occupied cells identically; the rule line is the sole indicator. — Awaiting accept/defer.
 2. **Assign §8 in-run ramp to a phase** (critic Phase 4). Spec §8 says "Level 18+: step delays ×0.85, floored. Refuges rare" and §3 says "After about level 18, enemy step delay drops." Currently constant 420 ms / constant refuge probability to level 34+. Suggest adding to Phase 5 or 6. — Awaiting accept/defer.
+3. **§8 Hard expressions ambiguous** (critic Phase 5). "operands to 12, larger results" — shipped Hard uses identical expr ranges to Standard. Replace with concrete difference or confirm they're the same. — Awaiting accept/defer.
+4. **§13 settings persistence** (critic Phase 5). Settings never saved to localStorage; mode select doesn't remember last choice; mode checkboxes have no effect. Name the phase that owns persistence. — Awaiting accept/defer.
