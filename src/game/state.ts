@@ -5,6 +5,7 @@ import type { Enemy, Refuge } from "@/game/enemies";
 import { handleTick } from "@/game/tick";
 import { playerStepDelay } from "@/game/player";
 import { getBand, getGenConfig, getKRange, type Band, type BandName } from "@/content/bands";
+import { ruleKRange } from "@/rules/rule-k";
 
 export const COLS = 6;
 export const ROWS = 5;
@@ -68,11 +69,7 @@ function nextChallengeMode(rule: Rule): Mode {
 }
 
 function genRule(mode: Mode, level: number, rng: () => number, band: Band): Rule {
-  const { min: kMin, max: kMax } = getKRange(band);
-  // Multiples widens by one per level, capped at the band's k max.
-  const top = mode === "multiples" ? Math.min(kMax, kMin + level + 1) : kMax;
-  // Hard floors expressions at 13; a lower equality/inequality key could never match.
-  const floor = mode === "equality" || mode === "inequality" ? Math.max(kMin, band.exprMinResult ?? 0) : kMin;
+  const { min: floor, max: top } = ruleKRange(mode, level, getKRange(band), band.exprMinResult ?? 0);
   const k = randomInt(rng, floor, top);
   switch (mode) {
     case "primes":

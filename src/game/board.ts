@@ -2,6 +2,7 @@ import type { Cell, Mode, Rule } from "@/rules/types";
 import { matches } from "@/rules/match";
 import { generateBoard, type GenConfig } from "@/rules/generate";
 import { getGenConfig, getKRange, type Band } from "@/content/bands";
+import { ruleKRange } from "@/rules/rule-k";
 
 const DEFAULT_CONFIG: GenConfig = {
   numMin: 1,
@@ -15,14 +16,7 @@ const DEFAULT_K: { min: number; max: number } = { min: 2, max: 12 };
 
 export function generateRule(mode: Mode, level: number, rng: () => number, band?: Band): Rule {
   const kRange = band ? getKRange(band) : DEFAULT_K;
-  // Multiples widens by one per level, capped at the band's k max.
-  const top = mode === "multiples" ? Math.min(kRange.max, kRange.min + level + 1) : kRange.max;
-  // Hard floors expression results at 13; an equality/inequality key below that could
-  // never match a generated expression. Kept in sync with genRule in state.ts.
-  const kMin =
-    mode === "equality" || mode === "inequality"
-      ? Math.max(kRange.min, band?.exprMinResult ?? 0)
-      : kRange.min;
+  const { min: kMin, max: top } = ruleKRange(mode, level, kRange, band?.exprMinResult ?? 0);
   const k = kMin + Math.floor(rng() * (top - kMin + 1));
   switch (mode) {
     case "primes":
