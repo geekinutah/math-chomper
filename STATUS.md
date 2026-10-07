@@ -37,10 +37,10 @@ Ledger for contracted work. The controller updates this file. Other roles do not
 | T-031 | Dev-Dependency Audit Fix (B-014) | — | done | 1 | — | no |
 | T-032 | Production RNG Seed (B-009) | 3 | done | 1 | — | no |
 | T-033 | Spawn Functions Take GameState (B-011) | 4 | done | 1 | — | no |
-| T-034 | Band-Aware Last-Resort Board Cells (B-017) | 2 | in progress | 1 | ../math-chomper-worktrees/t-034-band-fallback | no |
-| T-035 | Wrong-Eat Respawn + Freeze (B-019) | 3 | in progress | 1 | ../math-chomper-worktrees/t-035-wrong-eat-respawn | no |
-| T-036 | Step Ctx Uses Resolved Player Position (B-018) | 4 | in progress | 1 | ../math-chomper-worktrees/t-036-stale-targeting | no |
-| T-037 | Keyboard Param Name (B-005) | 3 | in progress | 1 | ../math-chomper-worktrees/t-037-keyboard-param | no |
+| T-034 | Band-Aware Last-Resort Board Cells (B-017) | 2 | done | 1 | — | no |
+| T-035 | Wrong-Eat Respawn + Freeze (B-019) | 3 | done | 1 | — | no |
+| T-036 | Step Ctx Uses Resolved Player Position (B-018) | 4 | done | 1 | — | no |
+| T-037 | Keyboard Param Name (B-005) | 3 | done | 1 | — | no |
 
 States: `todo`, `in progress`, `verifying`, `done`, `blocked`.
 
@@ -50,11 +50,10 @@ None.
 
 ## Sequencing
 
-- B-006 (game-over Menu button) and B-016 (rule-k dedup) both need `src/game/state.ts` — claim after T-035 merges.
-- B-010 (dedup replacement spawn) needs `src/game/tick.ts` — claim after T-036 merges.
-- B-020 is advisory (re-approve install scripts on a future esbuild/fsevents move); no action on the current tree.
-- B-021 (step ctx Ctx/`as StepCtx` — `src/game/enemies.ts` + `toStepCtx` in `tick.ts`) — claim after T-036 merges; both touch `toStepCtx`.
-- T-033/T-034/T-035/T-036/T-037 all work from post-T-030/T-031 main, so the earlier note about T-033's pre-T-030 base is moot; the five file sets are mutually disjoint.
+- Wave 2026-10-06 complete: T-033–T-037 merged at 7713cdb (B-011/B-017/B-019/B-018/B-005 resolved). All src files free again.
+- Batch 2 (claimed 2026-10-06, contracts T-038–T-040): T-038 (B-006, `state.ts`+`screens.ts`+`state.test.ts`; carries B-023's test strengthening) and T-039 (B-010, `tick.ts`+`tick.test.ts`) run in parallel now — file-disjoint. T-040 (B-021 ctx dedup, `enemies.ts`+`tick.ts`) is claimed but waits for T-039's `tick.ts` to merge.
+- Batch 3 (after batch 2 merges): T-041 (B-016 rule-k dedup, `board.ts`+`state.ts` — needs T-038's `state.ts` free) in parallel with T-040.
+- Batch 4: T-042 (B-022 test-file splits, pure test files) and B-020 (advisory: re-approve install scripts).
 
 ## Spec proposals awaiting Mike
 

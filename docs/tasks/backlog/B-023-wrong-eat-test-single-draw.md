@@ -1,0 +1,7 @@
+# B-023 Wrong-eat respawn test only samples one seeded draw; blocked-cell exclusions unguarded
+
+Found during: T-035 (verification). Renumbered from the verifier's B-025.
+Risk: low (behavior in code is correct and matches §9; the gap is test strength — a later edit to the blocked set could silently make enemy/refuge cells legal respawn targets and no test would catch it)
+Evidence: `src/game/state.ts:185-192` builds the respawn candidate set excluding enemy cells and the refuge. The T-035 test `wrong eat: player respawns off enemy and refuge cells` (test/state.test.ts:348) makes a single draw from one seeded rng over that set and asserts the one resulting position is on neither cell. Reproduced in a disposable worktree at b1968e2: deleting the refuge line (state.ts:187) leaves all 296 tests passing, and deleting the enemy loop (state.ts:186) leaves all 66 state.test.ts tests passing — the single seeded draw lands on a cell that happens to avoid the now-unblocked cells, so neither exclusion carries assertion power. (The T-035 contract prescribed exactly this test, so the implementer's reading is faithful; the weakness is in the contract's test design.)
+Direction: replace the single-draw assertion with a property-style check: run the reduce over N seeded rngs and require every resulting `playerPos` to be on no enemy cell and no refuge cell. T-038 (B-006) touches state.ts + test/state.test.ts and will carry this strengthening.
+State: open
