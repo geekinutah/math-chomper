@@ -46,6 +46,7 @@ function makeState(overrides: Partial<GameState> = {}): TestState {
     stepTimer: 0,
     pendingDir: null,
     queuedDir: null,
+    pendingSpawnAt: null,
     ...overrides,
   } as TestState;
 }

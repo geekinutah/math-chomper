@@ -37,6 +37,7 @@ export type GameState = {
   stepTimer: number;
   pendingDir: Dir | null;
   queuedDir: Dir | null;
+  pendingSpawnAt: number | null;
 };
 
 export type Action =
@@ -119,6 +120,7 @@ export function createInitialState(): GameState {
     stepTimer: 0,
     pendingDir: null,
     queuedDir: null,
+    pendingSpawnAt: null,
   };
 }
 
