@@ -48,7 +48,8 @@ export type Action =
   | { type: "next-level" }
   | { type: "pause" }
   | { type: "resume" }
-  | { type: "restart" };
+  | { type: "restart" }
+  | { type: "title" };
 
 let lcgState = 1;
 function defaultRng(): number {
@@ -237,5 +238,7 @@ export function reduce(state: GameState, action: Action, rng?: () => number): Ga
       return { ...state, phase: "playing" };
     case "restart":
       return startGame(state.mode, state.band, r);
+    case "title":
+      return createInitialState();
   }
 }

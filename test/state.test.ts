@@ -279,6 +279,23 @@ describe("state", () => {
     expect(after.phase).toBe("playing");
   });
 
+  it("title resets to the title screen from game-over", () => {
+    const s = makePlayingState({
+      phase: "game-over",
+      mode: "factors",
+      band: "hard",
+      level: 7,
+      score: 500,
+      lives: 0,
+      streak: 0,
+      reserveLives: 1,
+      nextLifeThreshold: 3000,
+      refuge: { pos: { col: 4, row: 4 }, expiresAt: 0 },
+    });
+    const after = reduce(s, { type: "title" }, rng);
+    expect(after).toEqual(createInitialState());
+  });
+
   it("tick is a no-op in phase 3", () => {
     const s = makePlayingState({ score: 42, streak: 2, lives: 3 });
     const after = reduce(s, { type: "tick", dt: 16 }, rng);
@@ -350,10 +367,12 @@ describe("state", () => {
     const board = boardWithCell(pos, { kind: "number", value: 7 });
     const enemy: Enemy = { id: 1, kind: "straight", pos, dir: "right", stepTimer: 420 };
     const refuge = { pos: { col: 3, row: 2 }, expiresAt: 0 };
-    const s = makePlayingState({ board, enemies: [enemy], refuge });
-    const after = reduce(s, { type: "eat" }, rng);
-    expect(after.playerPos).not.toEqual(enemy.pos);
-    expect(after.playerPos).not.toEqual(refuge.pos);
+    for (let seed = 1; seed <= 200; seed++) {
+      const s = makePlayingState({ board, enemies: [enemy], refuge });
+      const after = reduce(s, { type: "eat" }, seededRng(seed));
+      expect(after.playerPos).not.toEqual(enemy.pos);
+      expect(after.playerPos).not.toEqual(refuge.pos);
+    }
   });
 
   it("wrong eat on last life: game over, no respawn", () => {
