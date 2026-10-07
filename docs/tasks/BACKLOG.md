@@ -25,7 +25,7 @@ Index only. One line per item. The verifier or critic writes the item file in it
 | B-019 | Wrong eat never respawns or freezes (spec §9 "same respawn rule") | T-030 | resolved (T-035: respawn + 700 ms freeze; verifier PASS r1) |
 | B-020 | allowScripts keys are version-pinned; a future vite/esbuild/fsevents bump re-surfaces the warning | T-031 | open (advisory; no action on the current tree) |
 | B-021 | stepEnemy Ctx/`as StepCtx` cast bridges null→undefined refuge | T-033 | resolved (T-040: `Ctx`/`StepCtx` dropped, `stepEnemy` takes `GameState`, `isRefuge` `!== null`; verifier PASS r1) |
-| B-022 | Test files exceed the 250-line limit (state 693, tick 443, generate 328) | T-034/T-036 | accepted (T-042 in progress: shared `test-helpers.ts` + per-behavior splits) |
+| B-022 | Test files exceed the 250-line limit (state 693, tick 443, generate 328) | T-034/T-036 | resolved (T-042: shared `test/test-helpers.ts` + per-behavior splits; 126 names preserved, all files < 250, 312 tests) |
 | B-023 | Wrong-eat respawn test samples one seeded draw; blocked-cell exclusions unguarded | T-035 | resolved (T-038: 200-seed window 61537..61736; verifier confirmed power via mutation) |
 | B-024 | T-034 contract standard-band fallback cycle unreachable as written | T-034 | resolved (contract table corrected at merge) |
 | B-025 | No unit test imports `src/ui`; screen button dispatch (e.g. game-over Menu) unguarded | T-038 | open (advisory — needs a UI-layer test harness) |
