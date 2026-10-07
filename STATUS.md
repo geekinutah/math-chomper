@@ -46,8 +46,8 @@ Ledger for contracted work. The controller updates this file. Other roles do not
 | T-040 | Enemy Step Ctx Takes GameState (B-021) | 4 | done | 1 | — | no |
 | T-041 | Shared Rule-K Range Helper (B-016) | 2 | done | 1 | — | no |
  | T-042 | Test-File Splits + Shared Test Helpers (B-022) | — | done | 1 | — | no |
- | T-043 | Dedup Survivor: Arriving Eats Resident (B-026) | 4 | in progress | 1 | ../math-chomper-worktrees/t-043-dedup-survivor | no |
- | T-044 | UI Test Harness + Button-Dispatch Tests (B-025) | 6 | in progress | 1 | ../math-chomper-worktrees/t-044-ui-harness | no |
+ | T-043 | Dedup Survivor: Arriving Eats Resident (B-026) | 4 | done | 1 | — | no |
+ | T-044 | UI Test Harness + Button-Dispatch Tests (B-025) | 6 | done | 1 | — | no |
 
 States: `todo`, `in progress`, `verifying`, `done`, `blocked`.
 
@@ -62,8 +62,10 @@ None. (T-038 round 1 reported a contract ambiguity — the B-023 test's literal 
 - **T-039** (B-010, `state.ts` + `tick.ts` + 3 test helpers) — **done** (verifier PASS r1; B-010 resolved; B-026 filed — dedup-survivor spec ambiguity). `state.ts` + `tick.ts` free again → **T-040 (B-021, `enemies.ts`+`tick.ts`) and T-041 (B-016, `board.ts`+`state.ts`) are now claimable in parallel** (file-disjoint from each other).
 - **T-040** (B-021 ctx dedup, `enemies.ts`+`tick.ts`+`enemies.test.ts`) and **T-041** (B-016 rule-k dedup, `rules/rule-k.ts`+`board.ts`+`state.ts`) — **done** (both verifier PASS r1; B-021 + B-016 resolved; B-027 filed). All `src` files free again.
 - **T-042** (B-022 — split `state.test.ts` 693 / `tick.test.ts` 443 / `generate.test.ts` 328 into per-behavior files + a shared `test/test-helpers.ts`; pure test reorg, zero `src/` change) — **done** at 3ce2500 (merged `t-042-test-splits` @ be82489). Audit: 126 unique `it` names in the three deleted files match the new files exactly (zero missing, zero added); 312 tests still pass; `git diff --stat <base>..HEAD -- src/` empty; every touched file < 250 lines (max 236). B-022 resolved.
-- **Mike ruled 2026-10-07** on the two open decisions: **B-026** → keep §9:237 as written, make the code match (arriving eats resident, track per-cell residency) → **T-043**; **B-025** → "definitely build tests" (jsdom dev-dep harness for `src/ui`) → **T-044**. Both **in progress**, file-disjoint, running in parallel.
-- **Remaining open / advisory (not scheduled):** B-020 (advisory — re-approve install scripts on a *future* dep bump; none on the current tree), B-027 (advisory — `ruleKRange` degenerate `min>max`; no shipped band triggers it).
+- **T-043** (B-026 — §9:237 kept as written; the dedup now makes the *arriving* enemy eat the *resident* via start-of-tick positions; §9 NOT edited) — **done** at 5dba466 (verifier PASS r1; mutation check: inverting the rule fails the survivor tests; only `src/game/tick.ts` in `src/`; 314 tests). B-026 resolved.
+- **T-044** (B-025 — `jsdom` dev-dep harness + `test/ui/{screens,mode-select}` dispatch tests; zero `src/` change) — **done** at fac0291 (verifier PASS r1; 10 dispatch/visibility tests, mutation-confirmed; jsdom 30.1.2, 0 audit vulns; 322 tests in its branch). B-025 resolved; verifier filed **B-028** (settings/scores buttons still untested).
+- **Integrated into main** at the two merges above; combined gate green (**324 tests**, typecheck 0, build 0, no file over 250). **All Mike-requested work (B-026 + B-025) is now complete.**
+- **Remaining open / advisory (not scheduled):** B-020 (advisory — re-approve install scripts on a *future* dep bump; none on the current tree), B-027 (advisory — `ruleKRange` degenerate `min>max`; no shipped band triggers it), B-028 (advisory — settings/scores screen buttons untested; the jsdom harness makes a follow-up low-cost).
 
 ## Spec proposals awaiting Mike
 
