@@ -41,9 +41,28 @@ export function generateExprCell(config: GenConfig, rng: () => number): Cell {
       return { kind: "expr", text, value };
     }
   }
-  // 2×7 = 14: exact, operands in every band's 0–12 range, and 14 ≥ 13 clears Hard's floor.
-  const text = formatExpr(2, "×", 7);
-  return { kind: "expr", text, value: 14 };
+  // Candidates in fixed order; the first that is legal for this config wins.
+  const cands: Array<{ a: number; b: number; op: "+" | "−" | "×" | "÷" }> = [
+    { a: config.exprMin, b: config.exprMax, op: "+" },
+    { a: config.exprMax, b: config.exprMax, op: "+" },
+    { a: config.exprMax, b: config.exprMax, op: "×" },
+  ];
+  for (const cand of cands) {
+    if (!config.exprOps.includes(cand.op)) continue;
+    const text = formatExpr(cand.a, cand.op, cand.b);
+    const value = evalExpr(text);
+    if (value !== null && (config.exprMinResult === undefined || value >= config.exprMinResult)) {
+      return { kind: "expr", text, value };
+    }
+  }
+  // For every shipped band, candidate 1 (Easy/Standard) or 2 (Hard: 12+12 = 24 ≥ 13) is
+  // legal, so this tail only fires for a hand-crafted config whose floor exceeds every
+  // candidate's value. The last candidate is still classifiable by matches; §7 only
+  // forbids emitting a cell the engine cannot classify. ("×" never evals to null, so
+  // the direct product below is what evalExpr would have returned.)
+  const last = cands[cands.length - 1];
+  const text = formatExpr(last.a, last.op, last.b);
+  return { kind: "expr", text, value: evalExpr(text) ?? last.a * last.b };
 }
 
 function genExpr(rng: () => number, config: GenConfig): Cell {
@@ -76,10 +95,14 @@ function fillMatchCell(rule: Rule, config: GenConfig): Cell {
     case "equality":
       // If the band floors results and k < floor, this cell breaks the floor on
       // purpose: a board with 4+ matches is valid; band aesthetics are not a level rule.
-      return { kind: "expr", text: formatExpr(rule.k, "÷", 1), value: rule.k };
+      // k ≤ 2·exprMax for all shipped bands (max k 20, exprMax 12), so b stays in range;
+      // "+" is in every band's op list.
+      const a = Math.min(rule.k, config.exprMax);
+      const b = rule.k - a; // 0 when k ≤ exprMax; 1..12 for the shipped k range 13..20
+      return { kind: "expr", text: formatExpr(a, "+", b), value: rule.k };
     case "inequality":
-      // 2k ≠ k for k ≥ 2, so this is a match.
-      return { kind: "expr", text: formatExpr(rule.k, "×", 2), value: 2 * rule.k };
+      // 2·exprMax = 24 differs from every shipped k (2–20), so this is a match.
+      return { kind: "expr", text: formatExpr(config.exprMax, "+", config.exprMax), value: 2 * config.exprMax };
   }
 }
 
@@ -95,11 +118,15 @@ function fillNonMatchCell(rule: Rule, config: GenConfig): Cell {
       // 1 is not prime.
       return { kind: "number", value: 1 };
     case "equality":
-      // 2k ≠ k for k ≥ 2, so this is not a match.
-      return { kind: "expr", text: formatExpr(rule.k, "×", 2), value: 2 * rule.k };
+      // 2·exprMax = 24 differs from every shipped k (2–20), so this is not a match.
+      return { kind: "expr", text: formatExpr(config.exprMax, "+", config.exprMax), value: 2 * config.exprMax };
     case "inequality":
       // Value k = k, so this is not a match.
-      return { kind: "expr", text: formatExpr(rule.k, "÷", 1), value: rule.k };
+      // k ≤ 2·exprMax for all shipped bands (max k 20, exprMax 12), so b stays in range;
+      // "+" is in every band's op list.
+      const a = Math.min(rule.k, config.exprMax);
+      const b = rule.k - a; // 0 when k ≤ exprMax; 1..12 for the shipped k range 13..20
+      return { kind: "expr", text: formatExpr(a, "+", b), value: rule.k };
   }
 }
 
