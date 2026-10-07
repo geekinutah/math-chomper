@@ -43,6 +43,9 @@ function makeState(overrides: Partial<GameState> = {}): TestState {
     refuge: undefined as unknown as Refuge | null,
     simTime: 0,
     freezeTimer: 0,
+    stepTimer: 0,
+    pendingDir: null,
+    queuedDir: null,
     ...overrides,
   } as TestState;
 }

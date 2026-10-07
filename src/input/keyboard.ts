@@ -20,8 +20,6 @@ export function attachKeyboard(
   isPlaying: () => Phase
 ): () => void {
   function handler(e: KeyboardEvent): void {
-    if (e.repeat) return;
-
     const phase = isPlaying();
 
     const dir = MOVE_KEYS[e.key];
@@ -38,6 +36,7 @@ export function attachKeyboard(
     }
 
     if (e.key === "Escape") {
+      if (e.repeat) return;
       e.preventDefault();
       if (phase === "playing") {
         dispatch({ type: "pause" });
@@ -48,6 +47,7 @@ export function attachKeyboard(
     }
 
     if (e.key === "r" || e.key === "R") {
+      if (e.repeat) return;
       if (phase === "game-over") {
         e.preventDefault();
         dispatch({ type: "restart" });

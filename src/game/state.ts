@@ -3,6 +3,7 @@ import { matches } from "@/rules/match";
 import { generateBoard } from "@/rules/generate";
 import type { Enemy, Refuge } from "@/game/enemies";
 import { handleTick } from "@/game/tick";
+import { playerStepDelay } from "@/game/player";
 import { getBand, getGenConfig, getKRange, type Band, type BandName } from "@/content/bands";
 
 export const COLS = 6;
@@ -33,6 +34,9 @@ export type GameState = {
   refuge: Refuge | null;
   simTime: number;
   freezeTimer: number;
+  stepTimer: number;
+  pendingDir: Dir | null;
+  queuedDir: Dir | null;
 };
 
 export type Action =
@@ -87,6 +91,7 @@ function cellIndex(pos: PlayerPos): number {
 }
 
 const CENTER: PlayerPos = { col: 2, row: 2 };
+const IDLE_STEP = { stepTimer: 0, pendingDir: null, queuedDir: null };
 
 function freshBoard(): Cell[] {
   return Array.from({ length: BOARD_SIZE }, () => ({ kind: "empty" as const }));
@@ -110,6 +115,9 @@ export function createInitialState(): GameState {
     refuge: null,
     simTime: 0,
     freezeTimer: 0,
+    stepTimer: 0,
+    pendingDir: null,
+    queuedDir: null,
   };
 }
 
@@ -129,24 +137,10 @@ function startGame(mode: GameMode, bandName: BandName, rng: () => number): GameS
 }
 
 function handleMove(state: GameState, dir: Dir): GameState {
-  let { col, row } = state.playerPos;
-  switch (dir) {
-    case "up":
-      row -= 1;
-      break;
-    case "down":
-      row += 1;
-      break;
-    case "left":
-      col -= 1;
-      break;
-    case "right":
-      col += 1;
-      break;
+  if (state.stepTimer === 0) {
+    return { ...state, pendingDir: dir, stepTimer: playerStepDelay(state.level) };
   }
-  col = Math.max(0, Math.min(COLS - 1, col));
-  row = Math.max(0, Math.min(ROWS - 1, row));
-  return { ...state, playerPos: { col, row } };
+  return { ...state, queuedDir: dir };
 }
 
 function handleEat(state: GameState): GameState {
@@ -188,7 +182,7 @@ function handleEat(state: GameState): GameState {
 export function handleEnemyHit(state: GameState, rng: () => number): GameState {
   const lives = state.lives - 1;
   if (lives <= 0) {
-    return { ...state, lives: 0, streak: 0, freezeTimer: 700, phase: "game-over" };
+    return { ...state, ...IDLE_STEP, lives: 0, streak: 0, freezeTimer: 700, phase: "game-over" };
   }
   const blocked = new Set<string>();
   for (const e of state.enemies) blocked.add(`${e.pos.col},${e.pos.row}`);
@@ -198,7 +192,7 @@ export function handleEnemyHit(state: GameState, rng: () => number): GameState {
     for (let c = 0; c < COLS; c++)
       if (!blocked.has(`${c},${r}`)) cells.push({ col: c, row: r });
   const pos = cells.length > 0 ? cells[Math.floor(rng() * cells.length)] : CENTER;
-  return { ...state, lives, streak: 0, freezeTimer: 700, playerPos: pos };
+  return { ...state, ...IDLE_STEP, lives, streak: 0, freezeTimer: 700, playerPos: pos };
 }
 
 export function reduce(state: GameState, action: Action, rng?: () => number): GameState {
@@ -226,6 +220,7 @@ export function reduce(state: GameState, action: Action, rng?: () => number): Ga
       const board = generateBoard(rule, r, getGenConfig(band));
       return {
         ...state,
+        ...IDLE_STEP,
         phase: "playing",
         level: state.level + 1,
         rule,
