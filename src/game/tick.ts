@@ -65,6 +65,7 @@ export function handleTick(
   let score = state.score;
   let newBoard = state.board;
   let refuge = state.refuge;
+  let pendingSpawnAt = state.pendingSpawnAt;
 
   if (freezeTimer > 0) {
     freezeTimer = Math.max(0, freezeTimer - dtMs);
@@ -149,11 +150,29 @@ export function handleTick(
     }
   }
 
+  const cap = enemyCap(state.level);
+  const removedCount = newEnemies.length - deduped.length;
+
+  // Fire a replacement that was scheduled 2-4 s after an earlier collision.
+  if (pendingSpawnAt !== null && simTime >= pendingSpawnAt) {
+    pendingSpawnAt = null;
+    if (deduped.length < cap) {
+      const kind = pickEnemyKind(state.band, state.level, rng);
+      const ne = spawnEnemy(kind, { ...state, playerPos }, rng);
+      if (ne) { ne.id = nextId(deduped); deduped.push(ne); }
+    }
+  }
+
+  // Schedule a replacement when a collision removed an enemy and we are under cap.
+  if (removedCount > 0 && deduped.length < cap && pendingSpawnAt === null) {
+    pendingSpawnAt = simTime + 2000 + rng() * 2000;
+  }
+
   if (phase === "playing") {
     for (const e of deduped) {
       if (sameCell(e.pos, playerPos)) {
         return handleEnemyHit(
-          { ...state, simTime, enemies: deduped, refuge, board: newBoard, phase, playerPos },
+          { ...state, simTime, enemies: deduped, refuge, board: newBoard, phase, playerPos, pendingSpawnAt },
           rng
         );
       }
@@ -176,7 +195,6 @@ export function handleTick(
     }
   }
 
-  const cap = enemyCap(state.level);
   if (deduped.length < cap && rng() < 0.002) {
     const kind = pickEnemyKind(state.band, state.level, rng);
     const newEnemy = spawnEnemy(kind, { ...state, playerPos }, rng);
@@ -205,5 +223,6 @@ export function handleTick(
     stepTimer,
     pendingDir,
     queuedDir,
+    pendingSpawnAt,
   };
 }

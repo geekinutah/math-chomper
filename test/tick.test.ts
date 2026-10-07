@@ -41,6 +41,7 @@ function makeState(overrides: Partial<GameState> = {}): GameState {
     stepTimer: 0,
     pendingDir: null,
     queuedDir: null,
+    pendingSpawnAt: null,
     ...overrides,
   };
 }
@@ -400,5 +401,43 @@ describe("tick", () => {
     expect(after.playerPos).toEqual({ col: 3, row: 2 });
     expect(after.enemies[0].pos).toEqual({ col: 4, row: 1 });
     expect(after.lives).toBe(3);
+  });
+
+  it("collision schedules a replacement spawn", () => {
+    const a = makeEnemy({ id: 1, kind: "straight", pos: { col: 0, row: 0 }, dir: "down", stepTimer: 0 });
+    const b = makeEnemy({ id: 2, kind: "straight", pos: { col: 0, row: 2 }, dir: "up", stepTimer: 0 });
+    const s = makeState({ level: 4, enemies: [a, b] });
+    const after = handleTick(s, { type: "tick", dt: 1 }, () => 0.5);
+    expect(after.enemies).toHaveLength(1);
+    expect(after.pendingSpawnAt).not.toBeNull();
+    if (after.pendingSpawnAt !== null) {
+      expect(after.pendingSpawnAt).toBeGreaterThanOrEqual(after.simTime + 2000);
+      expect(after.pendingSpawnAt).toBeLessThanOrEqual(after.simTime + 4000);
+    }
+  });
+
+  it("a scheduled replacement spawns after the delay and clears the timer", () => {
+    const e = makeEnemy({ id: 1, kind: "straight", pos: { col: 3, row: 3 }, dir: "up", stepTimer: 0 });
+    const s = makeState({ level: 4, enemies: [e], pendingSpawnAt: 100, simTime: 100 });
+    const after = handleTick(s, { type: "tick", dt: 1 }, () => 0.5);
+    expect(after.enemies).toHaveLength(2);
+    expect(after.pendingSpawnAt).toBeNull();
+  });
+
+  it("a scheduled spawn does not exceed the cap", () => {
+    const e1 = makeEnemy({ id: 1, kind: "straight", pos: { col: 3, row: 3 }, dir: "up", stepTimer: 0 });
+    const e2 = makeEnemy({ id: 2, kind: "straight", pos: { col: 4, row: 3 }, dir: "up", stepTimer: 0 });
+    const s = makeState({ level: 4, enemies: [e1, e2], pendingSpawnAt: 100, simTime: 100 });
+    const after = handleTick(s, { type: "tick", dt: 1 }, () => 0.5);
+    expect(after.enemies).toHaveLength(2);
+    expect(after.pendingSpawnAt).toBeNull();
+  });
+
+  it("no second schedule while one is pending", () => {
+    const a = makeEnemy({ id: 1, kind: "straight", pos: { col: 0, row: 0 }, dir: "down", stepTimer: 0 });
+    const b = makeEnemy({ id: 2, kind: "straight", pos: { col: 0, row: 2 }, dir: "up", stepTimer: 0 });
+    const s = makeState({ level: 4, enemies: [a, b], pendingSpawnAt: 5000, simTime: 0 });
+    const after = handleTick(s, { type: "tick", dt: 1 }, () => 0.5);
+    expect(after.pendingSpawnAt).toBe(5000);
   });
 });
