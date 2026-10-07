@@ -118,7 +118,7 @@ function buildScreens(
   });
   gameOver.appendChild(againBtn);
   const menuBtn = makeButton("Menu", () => {
-    screenRefs.get(container)?.onAction({ type: "restart" });
+    screenRefs.get(container)?.onAction({ type: "title" });
   });
   gameOver.appendChild(menuBtn);
 
