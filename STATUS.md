@@ -36,7 +36,7 @@ Ledger for contracted work. The controller updates this file. Other roles do not
 | T-030 | Player Step Duration + Input Buffer (B-015) | 6 | done | 1 | — | yes |
 | T-031 | Dev-Dependency Audit Fix (B-014) | — | done | 1 | — | no |
 | T-032 | Production RNG Seed (B-009) | 3 | done | 1 | — | no |
-| T-033 | Spawn Functions Take GameState (B-011) | 4 | in progress | 1 | ../math-chomper-worktrees/t-033-spawn-sig | no |
+| T-033 | Spawn Functions Take GameState (B-011) | 4 | verifying | 1 | ../math-chomper-worktrees/t-033-verify | no |
 | T-034 | Band-Aware Last-Resort Board Cells (B-017) | 2 | in progress | 1 | ../math-chomper-worktrees/t-034-band-fallback | no |
 | T-035 | Wrong-Eat Respawn + Freeze (B-019) | 3 | in progress | 1 | ../math-chomper-worktrees/t-035-wrong-eat-respawn | no |
 | T-036 | Step Ctx Uses Resolved Player Position (B-018) | 4 | in progress | 1 | ../math-chomper-worktrees/t-036-stale-targeting | no |
