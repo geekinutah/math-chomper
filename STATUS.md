@@ -35,7 +35,7 @@ Ledger for contracted work. The controller updates this file. Other roles do not
 | T-029 | Hard Band Larger Expression Results | 6 | done | 1 | — | no |
 | T-030 | Player Step Duration + Input Buffer (B-015) | 6 | in progress | 1 | ../math-chomper-worktrees/t-030-player-step | yes |
 | T-031 | Dev-Dependency Audit Fix (B-014) | — | in progress | 1 | ../math-chomper-worktrees/t-031-dev-deps | no |
-| T-032 | Production RNG Seed (B-009) | 3 | in progress | 1 | ../math-chomper-worktrees/t-032-rng-seed | no |
+| T-032 | Production RNG Seed (B-009) | 3 | done | 1 | — | no |
 | T-033 | Spawn Functions Take GameState (B-011) | 4 | in progress | 1 | ../math-chomper-worktrees/t-033-spawn-sig | no |
 
 States: `todo`, `in progress`, `verifying`, `done`, `blocked`.

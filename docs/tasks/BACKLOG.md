@@ -12,7 +12,7 @@ Index only. One line per item. The verifier or critic writes the item file in it
 | B-006 | Game-over "Menu" button dispatches restart | T-010 | open (sequenced behind T-030) |
 | B-007 | generateRule ignores level parameter | T-011 | resolved |
 | B-008 | Screens container blocks pointer events | T-012 | resolved |
-| B-009 | Fixed LCG seed makes first board identical | T-012 | accepted (T-032 in progress) |
+| B-009 | Fixed LCG seed makes first board identical | T-012 | resolved (T-032: time-seeded production stream, 275 tests) |
 | B-010 | Enemy dedup does not schedule replacement spawn | T-015 | open (sequenced behind T-030) |
 | B-011 | Local type duplication in spawn.ts | T-014 | accepted (T-033 in progress, starts after T-031) |
 | B-012 | Contract perimeter count error (22 vs 18) | T-014 | resolved (contract doc corrected) |
