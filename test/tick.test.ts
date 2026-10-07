@@ -38,6 +38,9 @@ function makeState(overrides: Partial<GameState> = {}): GameState {
     refuge: null,
     simTime: 0,
     freezeTimer: 0,
+    stepTimer: 0,
+    pendingDir: null,
+    queuedDir: null,
     ...overrides,
   };
 }
@@ -184,6 +187,25 @@ describe("tick", () => {
       const onRefuge = after.enemies.filter((e) => sameCell(e.pos, after.refuge!.pos));
       expect(onRefuge).toHaveLength(0);
     }
+  });
+
+  it("player step freezes while freezeTimer > 0", () => {
+    const s = makeState({ freezeTimer: 500, stepTimer: 100, pendingDir: "right" });
+    const after = handleTick(s, { type: "tick", dt: 0.1 }, seededRng(1));
+    expect(after.stepTimer).toBe(100);
+    expect(after.pendingDir).toBe("right");
+    expect(after.queuedDir).toBeNull();
+    expect(after.playerPos).toEqual({ col: 2, row: 2 });
+    expect(after.freezeTimer).toBe(400);
+  });
+
+  it("enemy and player land on the same cell in one tick → hit", () => {
+    const enemy = makeEnemy({ pos: { col: 4, row: 2 }, dir: "left", stepTimer: 420 });
+    const s = makeState({ enemies: [enemy], playerPos: { col: 2, row: 2 } });
+    const moving: GameState = { ...s, pendingDir: "right", stepTimer: 140 };
+    const after = handleTick(moving, { type: "tick", dt: 0.5 }, seededRng(1));
+    expect(after.lives).toBe(2);
+    expect(sameCell(after.playerPos, { col: 3, row: 2 })).toBe(false);
   });
 
   it("collision: player and enemy same cell triggers enemy-hit", () => {

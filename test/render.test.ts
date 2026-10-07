@@ -83,6 +83,9 @@ function makeState(overrides: Partial<GameState> = {}): GameState {
     refuge: null,
     simTime: 0,
     freezeTimer: 0,
+    stepTimer: 0,
+    pendingDir: null,
+    queuedDir: null,
     ...overrides,
   };
 }

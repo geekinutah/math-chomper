@@ -1,5 +1,6 @@
 import type { GameState, Phase } from "./state";
 import { COLS, handleEnemyHit } from "./state";
+import { playerStepDelay, stepPos } from "./player";
 import type { Enemy, EnemyKind } from "./enemies";
 import { stepEnemy, sameCell } from "./enemies";
 import { spawnEnemy, spawnRefuge, enemyCap, enemyStepDelay, refugeSpawnChance } from "./spawn";
@@ -72,6 +73,26 @@ export function handleTick(
     }
   }
 
+  let playerPos = state.playerPos;
+  let stepTimer = state.stepTimer;
+  let pendingDir = state.pendingDir;
+  let queuedDir = state.queuedDir;
+
+  if (stepTimer > 0 && pendingDir !== null) {
+    stepTimer -= dtMs;
+    if (stepTimer <= 0) {
+      playerPos = stepPos(playerPos, pendingDir);
+      if (queuedDir !== null) {
+        pendingDir = queuedDir;
+        queuedDir = null;
+        stepTimer = playerStepDelay(state.level);
+      } else {
+        pendingDir = null;
+        stepTimer = 0;
+      }
+    }
+  }
+
   const ctx = toStepCtx(state);
   const newEnemies: Enemy[] = [];
 
@@ -130,9 +151,9 @@ export function handleTick(
 
   if (phase === "playing") {
     for (const e of deduped) {
-      if (sameCell(e.pos, state.playerPos)) {
+      if (sameCell(e.pos, playerPos)) {
         return handleEnemyHit(
-          { ...state, simTime, enemies: deduped, refuge, board: newBoard, phase },
+          { ...state, simTime, enemies: deduped, refuge, board: newBoard, phase, playerPos },
           rng
         );
       }
@@ -144,7 +165,7 @@ export function handleTick(
   }
 
   if (!refuge && rng() < refugeSpawnChance(state.level)) {
-    const newRefuge = spawnRefuge(state, simTime, rng);
+    const newRefuge = spawnRefuge({ ...state, playerPos }, simTime, rng);
     if (newRefuge) {
       refuge = newRefuge;
       for (let i = deduped.length - 1; i >= 0; i--) {
@@ -158,11 +179,17 @@ export function handleTick(
   const cap = enemyCap(state.level);
   if (deduped.length < cap && rng() < 0.002) {
     const kind = pickEnemyKind(state.band, state.level, rng);
-    const newEnemy = spawnEnemy(kind, state, rng);
+    const newEnemy = spawnEnemy(kind, { ...state, playerPos }, rng);
     if (newEnemy) {
       newEnemy.id = nextId(deduped);
       deduped.push(newEnemy);
     }
+  }
+
+  if (phase !== "playing") {
+    stepTimer = 0;
+    pendingDir = null;
+    queuedDir = null;
   }
 
   return {
@@ -172,7 +199,11 @@ export function handleTick(
     phase,
     score,
     board: newBoard,
+    playerPos,
     enemies: deduped,
     refuge,
+    stepTimer,
+    pendingDir,
+    queuedDir,
   };
 }
