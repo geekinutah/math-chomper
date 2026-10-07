@@ -14,7 +14,7 @@ Index only. One line per item. The verifier or critic writes the item file in it
 | B-008 | Screens container blocks pointer events | T-012 | resolved |
 | B-009 | Fixed LCG seed makes first board identical | T-012 | resolved (T-032: time-seeded production stream, 275 tests) |
 | B-010 | Enemy dedup does not schedule replacement spawn | T-015 | open (awaits T-036: tick.ts) |
-| B-011 | Local type duplication in spawn.ts | T-014 | accepted (T-033 in progress) |
+| B-011 | Local type duplication in spawn.ts | T-014 | resolved (T-033: spawn functions take GameState; verifier PASS r1) |
 | B-012 | Contract perimeter count error (22 vs 18) | T-014 | resolved (contract doc corrected) |
 | B-013 | T-027 contract omits closePath from FakeCtx list | T-027 | resolved (contract doc corrected) |
 | B-014 | Dev-dependency audit: vitest transitive vulns, unapproved install scripts | T-027 | resolved (T-031: vitest 5.0.3, 0 vulns, esbuild/fsevents approved) |
@@ -23,7 +23,8 @@ Index only. One line per item. The verifier or critic writes the item file in it
 | B-017 | Fallback/fill expr cells outside band operand grammar | T-029 | accepted (proposal #6 accepted by Mike; T-034 in progress) |
 | B-018 | Enemy AI targets the pre-resolution player position (one-cell lag) | T-030 | accepted (T-036 in progress) |
 | B-019 | Wrong eat never respawns or freezes (spec §9 "same respawn rule") | T-030 | accepted (T-035 in progress) |
-| B-020 | allowScripts keys are version-pinned; a future vite/esbuild/fsevents bump re-surfaces the warning | T-031 | open |
+| B-020 | allowScripts keys are version-pinned; a future vite/esbuild/fsevents bump re-surfaces the warning | T-031 | open (advisory; no action on the current tree) |
+| B-021 | stepEnemy Ctx/`as StepCtx` cast bridges null→undefined refuge | T-033 | open (awaits T-036: tick.ts) |
 
 States: `open`, `accepted`, `resolved`, `declined`.
 
