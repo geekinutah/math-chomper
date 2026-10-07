@@ -48,7 +48,7 @@ Ledger for contracted work. The controller updates this file. Other roles do not
  | T-042 | Test-File Splits + Shared Test Helpers (B-022) | — | done | 1 | — | no |
  | T-043 | Dedup Survivor: Arriving Eats Resident (B-026) | 4 | done | 1 | — | no |
  | T-044 | UI Test Harness + Button-Dispatch Tests (B-025) | 6 | done | 1 | — | no |
- | T-045 | Settings + Scores UI Dispatch Tests (B-028) | 6 | in progress | 1 | ../math-chomper-worktrees/t-045-ui-settings-scores | no |
+ | T-045 | Settings + Scores UI Dispatch Tests (B-028) | 6 | done | 1 | — | no |
 
 States: `todo`, `in progress`, `verifying`, `done`, `blocked`.
 
@@ -66,8 +66,9 @@ None. (T-038 round 1 reported a contract ambiguity — the B-023 test's literal 
 - **T-043** (B-026 — §9:237 kept as written; the dedup now makes the *arriving* enemy eat the *resident* via start-of-tick positions; §9 NOT edited) — **done** at 5dba466 (verifier PASS r1; mutation check: inverting the rule fails the survivor tests; only `src/game/tick.ts` in `src/`; 314 tests). B-026 resolved.
 - **T-044** (B-025 — `jsdom` dev-dep harness + `test/ui/{screens,mode-select}` dispatch tests; zero `src/` change) — **done** at fac0291 (verifier PASS r1; 10 dispatch/visibility tests, mutation-confirmed; jsdom 30.1.2, 0 audit vulns; 322 tests in its branch). B-025 resolved; verifier filed **B-028** (settings/scores buttons still untested).
 - **Integrated into main** at the two merges above; combined gate green (**324 tests**, typecheck 0, build 0, no file over 250). **All Mike-requested work (B-026 + B-025) is complete.**
-- **In progress:** **T-045** (B-028 — the adjacent settings/scores dispatch tests the T-044 harness left out; Mike: "do B-028 now"). Tests only: `test/ui/{settings,scores}.test.ts` under the existing jsdom harness, zero `src/`/dep change.
-- **Remaining open / advisory (not scheduled):** B-020 (advisory — re-approve install scripts on a *future* dep bump; none on the current tree), B-027 (advisory — `ruleKRange` degenerate `min>max`; no shipped band triggers it). (B-028 is now T-045, in progress.)
+- **T-045** (B-028 — the adjacent settings/scores dispatch tests the T-044 harness left out; Mike: "do B-028 now") — **done** at 036adce (verifier PASS r1; 11 tests, both mutation-confirmed; zero `src/`/dep/config change). B-028 resolved. Combined gate green (**335 tests**, typecheck 0, build 0, no file over 250).
+- **The full `src/ui` screen layer is now dispatch-tested** (screens, mode-select, settings, scores — 21 UI tests across the four `test/ui/*` files, all jsdom). All Mike-requested work (B-026, B-025, B-028) is complete.
+- **Remaining open / advisory (not scheduled):** B-020 (advisory — re-approve install scripts on a *future* dep bump; none on the current tree), B-027 (advisory — `ruleKRange` degenerate `min>max`; no shipped band triggers it). (B-028 resolved by T-045.)
 
 ## Spec proposals awaiting Mike
 
