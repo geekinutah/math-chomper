@@ -34,8 +34,6 @@ const OPPOSITE: Record<Dir, Dir> = {
 
 const ALL_DIRS: readonly Dir[] = ["up", "down", "left", "right"];
 
-type Ctx = GameState & { refuge?: Refuge };
-
 export function sameCell(a: PlayerPos, b: PlayerPos): boolean {
   return a.col === b.col && a.row === b.row;
 }
@@ -48,11 +46,11 @@ function inBounds(p: PlayerPos): boolean {
   return p.col >= 0 && p.col < COLS && p.row >= 0 && p.row < ROWS;
 }
 
-function isRefuge(p: PlayerPos, state: Ctx): boolean {
-  return state.refuge !== undefined && sameCell(p, state.refuge.pos);
+function isRefuge(p: PlayerPos, state: GameState): boolean {
+  return state.refuge !== null && sameCell(p, state.refuge.pos);
 }
 
-export function legalMoves(pos: PlayerPos, state: Ctx): PlayerPos[] {
+export function legalMoves(pos: PlayerPos, state: GameState): PlayerPos[] {
   const result: PlayerPos[] = [];
   for (const dir of ALL_DIRS) {
     const { dc, dr } = DIR_DELTAS[dir];
@@ -68,7 +66,7 @@ function pick<T>(arr: readonly T[], rng: () => number): T {
   return arr[Math.floor(rng() * arr.length)];
 }
 
-function stepStraight(enemy: Enemy, state: Ctx, rng: () => number): PlayerPos {
+function stepStraight(enemy: Enemy, state: GameState, rng: () => number): PlayerPos {
   const { dc, dr } = DIR_DELTAS[enemy.dir];
   const fwd = { col: enemy.pos.col + dc, row: enemy.pos.row + dr };
   if (inBounds(fwd) && !isRefuge(fwd, state)) return fwd;
@@ -84,7 +82,7 @@ function stepStraight(enemy: Enemy, state: Ctx, rng: () => number): PlayerPos {
   return enemy.pos;
 }
 
-function stepShy(enemy: Enemy, state: Ctx, rng: () => number): PlayerPos {
+function stepShy(enemy: Enemy, state: GameState, rng: () => number): PlayerPos {
   const moves = legalMoves(enemy.pos, state);
   if (moves.length === 0) return enemy.pos;
 
@@ -103,13 +101,13 @@ function stepShy(enemy: Enemy, state: Ctx, rng: () => number): PlayerPos {
   return pick(moves, rng);
 }
 
-function randomStep(enemy: Enemy, state: Ctx, rng: () => number): PlayerPos {
+function randomStep(enemy: Enemy, state: GameState, rng: () => number): PlayerPos {
   const moves = legalMoves(enemy.pos, state);
   if (moves.length === 0) return enemy.pos;
   return pick(moves, rng);
 }
 
-function stepChaser(enemy: Enemy, state: Ctx, rng: () => number): PlayerPos {
+function stepChaser(enemy: Enemy, state: GameState, rng: () => number): PlayerPos {
   const moves = legalMoves(enemy.pos, state);
   if (moves.length === 0) return enemy.pos;
 
@@ -127,7 +125,7 @@ function stepChaser(enemy: Enemy, state: Ctx, rng: () => number): PlayerPos {
   return pick(best, rng);
 }
 
-export function stepEnemy(enemy: Enemy, state: Ctx, rng: () => number): PlayerPos {
+export function stepEnemy(enemy: Enemy, state: GameState, rng: () => number): PlayerPos {
   switch (enemy.kind) {
     case "straight":
       return stepStraight(enemy, state, rng);

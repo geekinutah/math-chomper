@@ -8,7 +8,6 @@ import {
   sameCell,
   type Enemy,
   type EnemyKind,
-  type Refuge,
 } from "@/game/enemies";
 
 function seededRng(seed: number): () => number {
@@ -23,9 +22,7 @@ function emptyBoard(): Cell[] {
   return Array.from({ length: 30 }, () => ({ kind: "empty" as const }));
 }
 
-type TestState = GameState & { refuge?: Refuge };
-
-function makeState(overrides: Partial<GameState> = {}): TestState {
+function makeState(overrides: Partial<GameState> = {}): GameState {
   return {
     phase: "playing",
     mode: "multiples",
@@ -40,7 +37,7 @@ function makeState(overrides: Partial<GameState> = {}): TestState {
     board: emptyBoard(),
     playerPos: { col: 2, row: 2 },
     enemies: [],
-    refuge: undefined as unknown as Refuge | null,
+    refuge: null,
     simTime: 0,
     freezeTimer: 0,
     stepTimer: 0,
@@ -48,7 +45,7 @@ function makeState(overrides: Partial<GameState> = {}): TestState {
     queuedDir: null,
     pendingSpawnAt: null,
     ...overrides,
-  } as TestState;
+  };
 }
 
 function makeEnemy(
@@ -88,7 +85,7 @@ describe("legalMoves", () => {
   });
 
   it("legalMoves excludes refuge", () => {
-    const state = makeState() as TestState;
+    const state = makeState();
     state.refuge = { pos: { col: 3, row: 2 }, expiresAt: 100 };
     const moves = legalMoves({ col: 2, row: 2 }, state);
     expect(moves).toHaveLength(3);
@@ -172,7 +169,7 @@ describe("chaser", () => {
   });
 
   it("chaser does not enter refuge", () => {
-    const state = makeState({ playerPos: { col: 2, row: 3 } }) as TestState;
+    const state = makeState({ playerPos: { col: 2, row: 3 } });
     state.refuge = { pos: { col: 1, row: 1 }, expiresAt: 100 };
     const enemy = makeEnemy("chaser", { col: 0, row: 0 }, "right");
     const next = stepEnemy(enemy, state, seededRng(1));
@@ -184,7 +181,7 @@ describe("refuge blocking", () => {
   it("no enemy steps onto refuge", () => {
     const kinds: EnemyKind[] = ["straight", "shy", "eater", "rewriter", "chaser"];
     for (const kind of kinds) {
-      const state = makeState({ playerPos: { col: 0, row: 0 } }) as TestState;
+      const state = makeState({ playerPos: { col: 0, row: 0 } });
       state.refuge = { pos: { col: 3, row: 2 }, expiresAt: 100 };
       const enemy = makeEnemy(kind, { col: 2, row: 2 }, "right");
       const next = stepEnemy(enemy, state, seededRng(99));
@@ -195,7 +192,7 @@ describe("refuge blocking", () => {
 
 describe("eater and rewriter", () => {
   it("eater returns a legal position", () => {
-    const state = makeState() as TestState;
+    const state = makeState();
     state.refuge = { pos: { col: 3, row: 2 }, expiresAt: 100 };
     const enemy = makeEnemy("eater", { col: 2, row: 2 }, "right");
     const next = stepEnemy(enemy, state, seededRng(5));
@@ -207,7 +204,7 @@ describe("eater and rewriter", () => {
   });
 
   it("rewriter returns a legal position", () => {
-    const state = makeState() as TestState;
+    const state = makeState();
     state.refuge = { pos: { col: 3, row: 2 }, expiresAt: 100 };
     const enemy = makeEnemy("rewriter", { col: 2, row: 2 }, "up");
     const next = stepEnemy(enemy, state, seededRng(5));
