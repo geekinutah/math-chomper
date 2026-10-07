@@ -1,0 +1,7 @@
+# B-025 No test covers the screen DOM buttons; a game-over Menu dispatch regression is invisible to the suite
+
+Found during: T-038 (verification, mutation check).
+Risk: low (the Menu button in the candidate is correct and dispatches `title`; the gap is test strength — a future edit that reverts the game-over "Menu" button to `{ type: "restart" }`, or changes any other screen button, would pass `npm test` and `npm run typecheck` unchanged because no test references `src/ui` at all)
+Evidence: `grep -rn "ui/" test/` → no matches; no test file imports `src/ui/screens.ts` or any other UI module. Reproduced in a disposable worktree at 98d2aea: reverting the Menu button at `src/ui/screens.ts:121` from `{ type: "title" }` back to `{ type: "restart" }` → `npm run typecheck` exit 0 and the full suite is unaffected (304 tests pass). The reducer `title` case IS covered (`title resets to the title screen from game-over`, test/state.test.ts:282), so only the DOM wiring is unguarded.
+Direction: a small `test/screens.test.ts` (jsdom-free: buildScreens against a `document` stub, or refactor buildScreens to accept a minimal element factory) asserting the game-over buttons dispatch `restart` (Play Again) and `title` (Menu) respectively, and the title Play button opens mode-select. Note B-022 (test file splits) if the new file grows.
+State: open
