@@ -9,11 +9,11 @@ Index only. One line per item. The verifier or critic writes the item file in it
 | B-003 | generateBoard: no max-iteration guard | T-006 | resolved (T-029: 1000-draw cap + known-valid fill) |
 | B-004 | Loop createLoop signature: 3 params vs contract 2 | T-007 | resolved (contract doc corrected) |
 | B-005 | Keyboard param named isPlaying but returns Phase | T-008 | resolved (T-037: getPhase, verifier PASS r1) |
-| B-006 | Game-over "Menu" button dispatches restart | T-010 | accepted (T-038 in progress; carries B-023) |
+| B-006 | Game-over "Menu" button dispatches restart | T-010 | accepted (T-038 in progress) |
 | B-007 | generateRule ignores level parameter | T-011 | resolved |
 | B-008 | Screens container blocks pointer events | T-012 | resolved |
 | B-009 | Fixed LCG seed makes first board identical | T-012 | resolved (T-032: time-seeded production stream, 275 tests) |
-| B-010 | Enemy dedup does not schedule replacement spawn | T-015 | accepted (T-039 in progress) |
+| B-010 | Enemy dedup does not schedule replacement spawn | T-015 | open (T-039 queued; awaits T-038: state.ts) |
 | B-011 | Local type duplication in spawn.ts | T-014 | resolved (T-033: spawn functions take GameState; verifier PASS r1) |
 | B-012 | Contract perimeter count error (22 vs 18) | T-014 | resolved (contract doc corrected) |
 | B-013 | T-027 contract omits closePath from FakeCtx list | T-027 | resolved (contract doc corrected) |

@@ -41,6 +41,7 @@ Ledger for contracted work. The controller updates this file. Other roles do not
 | T-035 | Wrong-Eat Respawn + Freeze (B-019) | 3 | done | 1 | — | no |
 | T-036 | Step Ctx Uses Resolved Player Position (B-018) | 4 | done | 1 | — | no |
 | T-037 | Keyboard Param Name (B-005) | 3 | done | 1 | — | no |
+| T-038 | Game-Over "Menu" → Title + Wrong-Eat Test (B-006, B-023) | 6 | in progress | 1 | ../math-chomper-worktrees/t-038-menu-button | no |
 
 States: `todo`, `in progress`, `verifying`, `done`, `blocked`.
 
@@ -51,9 +52,10 @@ None.
 ## Sequencing
 
 - Wave 2026-10-06 complete: T-033–T-037 merged at 7713cdb (B-011/B-017/B-019/B-018/B-005 resolved). All src files free again.
-- Batch 2 (claimed 2026-10-06, contracts T-038–T-040): T-038 (B-006, `state.ts`+`screens.ts`+`state.test.ts`; carries B-023's test strengthening) and T-039 (B-010, `tick.ts`+`tick.test.ts`) run in parallel now — file-disjoint. T-040 (B-021 ctx dedup, `enemies.ts`+`tick.ts`) is claimed but waits for T-039's `tick.ts` to merge.
-- Batch 3 (after batch 2 merges): T-041 (B-016 rule-k dedup, `board.ts`+`state.ts` — needs T-038's `state.ts` free) in parallel with T-040.
-- Batch 4: T-042 (B-022 test-file splits, pure test files) and B-020 (advisory: re-approve install scripts).
+- Batch 2 (claimed 2026-10-06): **T-038** (B-006, `state.ts`+`screens.ts`+`state.test.ts`; carries B-023). Now in progress.
+- **`state.ts` is the bottleneck** — T-038, T-039, and T-041 all need it, and T-039 + T-040 both need `tick.ts`. So the wave is serialized by file ownership, not parallel:
+  - T-038 (state.ts) → then **T-039** (B-010, `state.ts` new `pendingSpawnAt` field + `tick.ts` + `tick.test.ts`) → then **T-040** (B-021 ctx dedup, `enemies.ts`+`tick.ts`) **in parallel with** **T-041** (B-016 rule-k dedup, `board.ts`+`state.ts`). T-040 and T-041 are file-disjoint from each other, so they run together once T-039 merges.
+  - Then **T-042** (B-022 test-file splits, pure test files) and **B-020** (advisory: re-approve install scripts) last.
 
 ## Spec proposals awaiting Mike
 
