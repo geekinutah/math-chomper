@@ -42,6 +42,7 @@ Ledger for contracted work. The controller updates this file. Other roles do not
 | T-036 | Step Ctx Uses Resolved Player Position (B-018) | 4 | done | 1 | — | no |
 | T-037 | Keyboard Param Name (B-005) | 3 | done | 1 | — | no |
 | T-038 | Game-Over "Menu" → Title + Wrong-Eat Test (B-006, B-023) | 6 | done | 2 | — | no |
+| T-039 | Enemy Dedup Replacement Spawn (B-010) | 4 | in progress | 1 | ../math-chomper-worktrees/t-039-replacement-spawn | no |
 
 States: `todo`, `in progress`, `verifying`, `done`, `blocked`.
 
@@ -52,7 +53,8 @@ None. (T-038 round 1 reported a contract ambiguity — the B-023 test's literal 
 ## Sequencing
 
 - Wave 2026-10-06 complete: T-033–T-037 merged at 7713cdb (B-011/B-017/B-019/B-018/B-005 resolved). All src files free again.
-- **T-038** (B-006, `state.ts`+`screens.ts`+`state.test.ts`; carried B-023) — **done** at cf3568b (verifier PASS r2; B-006 + B-023 resolved; B-025 filed — no unit test imports `src/ui`). `state.ts` free again.
+- **T-038** (B-006, `state.ts`+`screens.ts`+`state.test.ts`; carried B-023) — **done** at cf3568b (verifier PASS r2; B-006 + B-023 resolved; B-025 filed — no unit test imports `src/ui`).
+- **T-039** (B-010, `state.ts` new `pendingSpawnAt` field + `tick.ts` + 3 test helpers) — now in progress. `state.ts` + `tick.ts` reserved by it.
 - **`state.ts` is the bottleneck** — T-038, T-039, and T-041 all need it, and T-039 + T-040 both need `tick.ts`. So the wave is serialized by file ownership, not parallel:
   - T-038 (state.ts) → then **T-039** (B-010, `state.ts` new `pendingSpawnAt` field + `tick.ts` + `tick.test.ts`) → then **T-040** (B-021 ctx dedup, `enemies.ts`+`tick.ts`) **in parallel with** **T-041** (B-016 rule-k dedup, `board.ts`+`state.ts`). T-040 and T-041 are file-disjoint from each other, so they run together once T-039 merges.
   - Then **T-042** (B-022 test-file splits, pure test files) and **B-020** (advisory: re-approve install scripts) last.
