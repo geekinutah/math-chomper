@@ -1,6 +1,6 @@
 import { describe, expect, it } from "vitest";
 import { evalExpr } from "@/rules/expr";
-import { generateBoard, type GenConfig } from "@/rules/generate";
+import { generateBoard, generateExprCell, type GenConfig } from "@/rules/generate";
 import { matches } from "@/rules/match";
 import type { Cell, Rule } from "@/rules/types";
 
@@ -246,5 +246,83 @@ describe("hard expression floor", () => {
     const count = matchCount(rule, board);
     expect(count).toBeGreaterThanOrEqual(4);
     expect(count).toBeLessThanOrEqual(10);
+  });
+});
+
+function cycleRng(values: number[]): () => number {
+  let i = 0;
+  return () => values[i++ % values.length];
+}
+
+// Finds the op glyph in an expr text and parses both sides; texts carry no signs.
+function operands(text: string): { a: number; op: string; b: number } | null {
+  for (const op of ["+", "−", "×", "÷"]) {
+    const i = text.indexOf(op);
+    if (i > 0 && i < text.length - 1) {
+      const a = Number(text.slice(0, i));
+      const b = Number(text.slice(i + 1));
+      if (Number.isInteger(a) && Number.isInteger(b)) {
+        return { a, op, b };
+      }
+    }
+  }
+  return null;
+}
+
+describe("band-aware last-resort cells (T-034)", () => {
+  it('generateExprCell fallback: easy → "0+12" (12)', () => {
+    const cell = generateExprCell(easyConfig, cycleRng([0.6, 0.05, 0.99]));
+    expect(cell).toEqual({ kind: "expr", text: "0+12", value: 12 });
+  });
+
+  it('generateExprCell fallback: hard → "12+12" (24), clears the floor', () => {
+    const cell = generateExprCell(hardConfig, cycleRng([0.3, 0.05, 0.95]));
+    expect(cell).toEqual({ kind: "expr", text: "12+12", value: 24 });
+  });
+
+  it('generateExprCell fallback: standard → "0+12" (12)', () => {
+    // Standard has a 4-op list, so 0.6 would draw "×" and succeed on attempt 1;
+    // 0.3 forces "−" (0−12 → eval null) so all 100 attempts fail and the fallback runs.
+    const cell = generateExprCell(config, cycleRng([0.3, 0.05, 0.95]));
+    expect(cell).toEqual({ kind: "expr", text: "0+12", value: 12 });
+  });
+
+  it("degenerate board: every expr cell obeys the band grammar", () => {
+    const rules: Rule[] = [
+      { mode: "equality", k: 13 },
+      { mode: "inequality", k: 13 },
+    ];
+    for (const cfg of [easyConfig, config, hardConfig]) {
+      for (const rule of rules) {
+        const board = generateBoard(rule, cycleRng([0.6, 0.05, 0.99]), cfg);
+        for (const cell of board) {
+          if (cell.kind !== "expr") continue;
+          const parts = operands(cell.text);
+          expect(parts, cell.text).not.toBeNull();
+          if (parts === null) continue;
+          expect(cfg.exprOps.some((o) => o === parts.op), cell.text).toBe(true);
+          expect(Number.isInteger(parts.a) && Number.isInteger(parts.b), cell.text).toBe(true);
+          expect(parts.a, cell.text).toBeGreaterThanOrEqual(cfg.exprMin);
+          expect(parts.a, cell.text).toBeLessThanOrEqual(cfg.exprMax);
+          expect(parts.b, cell.text).toBeGreaterThanOrEqual(cfg.exprMin);
+          expect(parts.b, cell.text).toBeLessThanOrEqual(cfg.exprMax);
+        }
+      }
+    }
+  });
+
+  it("degenerate board still reaches its match quotas", () => {
+    const rules: Rule[] = [
+      { mode: "equality", k: 13 },
+      { mode: "inequality", k: 13 },
+    ];
+    for (const cfg of [easyConfig, config, hardConfig]) {
+      for (const rule of rules) {
+        const board = generateBoard(rule, cycleRng([0.6, 0.05, 0.99]), cfg);
+        const count = matchCount(rule, board);
+        expect(count, rule.mode).toBeGreaterThanOrEqual(4);
+        expect(count, rule.mode).toBeLessThanOrEqual(10);
+      }
+    }
   });
 });
