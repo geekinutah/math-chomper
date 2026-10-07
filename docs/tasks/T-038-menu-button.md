@@ -55,7 +55,12 @@ it("wrong eat: player respawns off enemy and refuge cells", () => {
   const board = boardWithCell(pos, { kind: "number", value: 7 });
   const enemy: Enemy = { id: 1, kind: "straight", pos, dir: "right", stepTimer: 420 };
   const refuge = { pos: { col: 3, row: 2 }, expiresAt: 0 };
-  for (let seed = 1; seed <= 200; seed++) {
+  // 61537..61736 (not 1..200): the LCG's first draw from a low seed s is
+  // ~16807*s/2^31, so seeds 1..200 all yield v<0.002 -> floor(v*28)=floor(v*30)=0,
+  // i.e. the respawn always lands on cell (0,0) and the exclusions are never
+  // exercised. This window's first draws land on index 13 (safe) for correct
+  // code and index 14 (= the enemy / refuge cell) once an exclusion is dropped.
+  for (let seed = 61537; seed <= 61736; seed++) {
     const s = makePlayingState({ board, enemies: [enemy], refuge });
     const after = reduce(s, { type: "eat" }, seededRng(seed));
     expect(after.playerPos).not.toEqual(enemy.pos);
@@ -65,6 +70,8 @@ it("wrong eat: player respawns off enemy and refuge cells", () => {
 ```
 
 This is a strengthening, not a deletion: the same two conditions are now asserted across 200 seeds. `seededRng` and the `Enemy` type are already imported/defined at the top of the file (lines 16, 3). Do not delete the surrounding wrong-eat tests (337-346, 359-369).
+
+> **Controller note (round 1 → round 2).** Round 1 shipped this loop with the literal `1..200` range and reported BLOCKED: it is a no-op assertion (see comment above — verified independently: seeds 1..200 give `floor(v*28)=floor(v*30)=0`, so the player always respawns on (0,0) and the test passes with either exclusion line deleted). Controller decision: **use `61537..61736`**. Do not widen or shift the range further; it is intentionally a deterministic 200-seed window whose first draws straddle the enemy/refuge index. The B-023 item in the backlog records the LCG first-draw-bias root cause.
 
 ## Acceptance
 

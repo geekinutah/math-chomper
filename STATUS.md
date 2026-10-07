@@ -47,7 +47,7 @@ States: `todo`, `in progress`, `verifying`, `done`, `blocked`.
 
 ## Blockers
 
-None.
+None. (T-038 round 1 reported a contract ambiguity — the B-023 test's literal `1..200` seed range is a no-op under the LCG first-draw bias. Controller resolved 2026-10-06: use `61537..61736`; contract + B-023 updated. Not a blocker, round 2 proceeds.)
 
 ## Sequencing
 
