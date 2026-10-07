@@ -186,7 +186,7 @@ Definitions:
 - Inequality: expression value `!== k`. Both sides are integers. No division by zero. Division only when it divides evenly, so the board never shows `5÷2`.
 - Empty cells never match. Eating empty is a no-op, not a miss.
 
-Expression grammar, v1 only: `a+b`, `a−b`, `a×b`, `a÷b`, with `a` and `b` integers 0–12 for addition/subtraction and 1–12 for multiplication/division. Display uses `×` and `÷`, not `*` and `/`. Subtraction results are non-negative in v1.
+Expression grammar, v1 only: `a+b`, `a−b`, `a×b`, `a÷b`, with `a` and `b` integers 0–12 for addition/subtraction and 1–12 for multiplication/division. That split records the 1986 original; v1 board generation draws operands from the band tables in §8 (0–12 wherever a band leaves the range unstated). Display uses `×` and `÷`, not `*` and `/`. Subtraction results are non-negative in v1.
 
 Board generation constraints:
 

@@ -5,7 +5,7 @@ Index only. One line per item. The verifier or critic writes the item file in it
 | Id | Title | Found during | State |
 |---|---|---|---|
 | B-001 | Contract typo: 0÷5 test name | T-003 | resolved (contract doc corrected) |
-| B-002 | GenConfig operand range: per-op vs uniform | T-005 | open (spec proposal #5, awaiting Mike) |
+| B-002 | GenConfig operand range: per-op vs uniform | T-005 | resolved (§8 band tables win; §7 annotated, no code change) |
 | B-003 | generateBoard: no max-iteration guard | T-006 | resolved (T-029: 1000-draw cap + known-valid fill) |
 | B-004 | Loop createLoop signature: 3 params vs contract 2 | T-007 | resolved (contract doc corrected) |
 | B-005 | Keyboard param named isPlaying but returns Phase | T-008 | open (sequenced behind T-030) |
