@@ -4,23 +4,6 @@ import type { Enemy, EnemyKind, Refuge } from "./enemies";
 
 export type { Enemy, EnemyKind, Refuge };
 
-export type SpawnState = {
-  phase: GameState["phase"];
-  mode: GameState["mode"];
-  level: number;
-  score: number;
-  lives: number;
-  reserveLives: number;
-  streak: number;
-  nextLifeThreshold: number;
-  rule: GameState["rule"];
-  board: GameState["board"];
-  playerPos: PlayerPos;
-  enemies?: Enemy[];
-  refuge?: Refuge | null;
-  blockedCells?: PlayerPos[];
-};
-
 const BASE_ENEMY_STEP_MS = 420;
 const MIN_ENEMY_STEP_MS = 180;
 const RAMP_LEVEL = 18;
@@ -78,13 +61,12 @@ function pickRandom<T>(items: T[], rng: () => number): T | null {
   return items[Math.floor(rng() * items.length)];
 }
 
-export function spawnEnemy(kind: EnemyKind, state: SpawnState, rng: () => number): Enemy | null {
+export function spawnEnemy(kind: EnemyKind, state: GameState, rng: () => number): Enemy | null {
   const blocked = new Set<string>();
   const key = (p: PlayerPos) => `${p.col},${p.row}`;
 
   blocked.add(key(state.playerPos));
   if (state.refuge) blocked.add(key(state.refuge.pos));
-  if (state.blockedCells) for (const p of state.blockedCells) blocked.add(key(p));
 
   const edges = edgeCells().filter((p) => !blocked.has(key(p)));
   const pos = pickRandom(edges, rng);
@@ -93,7 +75,7 @@ export function spawnEnemy(kind: EnemyKind, state: SpawnState, rng: () => number
   return { id: 0, kind, pos, dir: "down", stepTimer: enemyStepDelay(state.level) };
 }
 
-export function spawnRefuge(state: SpawnState, simTime: number, rng: () => number): Refuge | null {
+export function spawnRefuge(state: GameState, simTime: number, rng: () => number): Refuge | null {
   const cells = allCells().filter((p) => !samePos(p, state.playerPos));
   const pos = pickRandom(cells, rng);
   if (!pos) return null;

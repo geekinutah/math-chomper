@@ -9,7 +9,8 @@ import {
   refugeSpawnChance,
   edgeCells,
   type EnemyKind,
-  type SpawnState,
+  type Enemy,
+  type Refuge,
 } from "@/game/spawn";
 
 function seededRng(seed: number): () => number {
@@ -24,16 +25,18 @@ function isEdge(pos: PlayerPos): boolean {
   return pos.col === 0 || pos.col === COLS - 1 || pos.row === 0 || pos.row === ROWS - 1;
 }
 
-function makeState(overrides: Partial<GameState> = {}, extra: Partial<SpawnState> = {}): SpawnState {
+function makeState(
+  overrides: Partial<GameState> = {},
+  extra: { enemies?: Enemy[]; refuge?: Refuge | null } = {},
+): GameState {
   const base = createInitialState();
   const partial = { ...base, ...overrides };
   const s = {
     ...partial,
     enemies: extra.enemies ?? [],
     refuge: extra.refuge ?? null,
-    blockedCells: extra.blockedCells ?? [],
   };
-  return s as SpawnState;
+  return s;
 }
 
 function isSame(a: PlayerPos, b: PlayerPos): boolean {
@@ -158,13 +161,20 @@ describe("spawnEnemy", () => {
     }
   });
 
-  it("null when no valid edge (player + blocked cells cover all edges)", () => {
-    const allEdges = edgeCells();
-    const playerPos = allEdges[0];
-    const blockedCells = allEdges.slice(1).map((p) => p);
-    const state = makeState({ playerPos }, { blockedCells });
+  it("returns non-null with player and refuge both on edges", () => {
+    const playerPos: PlayerPos = { col: 0, row: 0 };
+    const refugePos: PlayerPos = { col: 5, row: 0 };
+    const state = makeState(
+      { playerPos },
+      { refuge: { pos: refugePos, expiresAt: 5000 } },
+    );
     const enemy = spawnEnemy("straight", state, seededRng(99));
-    expect(enemy).toBeNull();
+    expect(enemy).not.toBeNull();
+    if (enemy) {
+      expect(isEdge(enemy.pos)).toBe(true);
+      expect(isSame(enemy.pos, playerPos)).toBe(false);
+      expect(isSame(enemy.pos, refugePos)).toBe(false);
+    }
   });
 
   it("has correct kind", () => {
