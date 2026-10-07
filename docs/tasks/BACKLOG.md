@@ -28,8 +28,8 @@ Index only. One line per item. The verifier or critic writes the item file in it
 | B-022 | Test files exceed the 250-line limit (state 693, tick 443, generate 328) | T-034/T-036 | resolved (T-042: shared `test/test-helpers.ts` + per-behavior splits; 126 names preserved, all files < 250, 312 tests) |
 | B-023 | Wrong-eat respawn test samples one seeded draw; blocked-cell exclusions unguarded | T-035 | resolved (T-038: 200-seed window 61537..61736; verifier confirmed power via mutation) |
 | B-024 | T-034 contract standard-band fallback cycle unreachable as written | T-034 | resolved (contract table corrected at merge) |
-| B-025 | No unit test imports `src/ui`; screen button dispatch (e.g. game-over Menu) unguarded | T-038 | open (advisory — needs a UI-layer test harness) |
-| B-026 | Dedup survivor keeps first-in-array; spec §9:237 says the arriving one removes the resident | T-039 | open (advisory — spec decision for Mike: pin the survivor rule or waive the sentence) |
+| B-025 | No unit test imports `src/ui`; screen button dispatch (e.g. game-over Menu) unguarded | T-038 | accepted (T-044 in progress: jsdom dev-dep harness + `test/ui/*` dispatch tests; owner approved 2026-10-07) |
+| B-026 | Dedup survivor keeps first-in-array; spec §9:237 says the arriving one removes the resident | T-039 | accepted (T-043 in progress: keep §9:237, dedup prefers the arriver over the resident via start-of-tick positions; owner ruled 2026-10-07) |
 | B-027 | `ruleKRange` can report `min > max` with no guard/test; no shipped band triggers it | T-041 | open (advisory — decide: document as degenerate behavior, or add a defensive clamp) |
 
 States: `open`, `accepted`, `resolved`, `declined`.

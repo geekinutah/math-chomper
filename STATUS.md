@@ -46,6 +46,8 @@ Ledger for contracted work. The controller updates this file. Other roles do not
 | T-040 | Enemy Step Ctx Takes GameState (B-021) | 4 | done | 1 | — | no |
 | T-041 | Shared Rule-K Range Helper (B-016) | 2 | done | 1 | — | no |
  | T-042 | Test-File Splits + Shared Test Helpers (B-022) | — | done | 1 | — | no |
+ | T-043 | Dedup Survivor: Arriving Eats Resident (B-026) | 4 | in progress | 1 | ../math-chomper-worktrees/t-043-dedup-survivor | no |
+ | T-044 | UI Test Harness + Button-Dispatch Tests (B-025) | 6 | in progress | 1 | ../math-chomper-worktrees/t-044-ui-harness | no |
 
 States: `todo`, `in progress`, `verifying`, `done`, `blocked`.
 
@@ -60,7 +62,8 @@ None. (T-038 round 1 reported a contract ambiguity — the B-023 test's literal 
 - **T-039** (B-010, `state.ts` + `tick.ts` + 3 test helpers) — **done** (verifier PASS r1; B-010 resolved; B-026 filed — dedup-survivor spec ambiguity). `state.ts` + `tick.ts` free again → **T-040 (B-021, `enemies.ts`+`tick.ts`) and T-041 (B-016, `board.ts`+`state.ts`) are now claimable in parallel** (file-disjoint from each other).
 - **T-040** (B-021 ctx dedup, `enemies.ts`+`tick.ts`+`enemies.test.ts`) and **T-041** (B-016 rule-k dedup, `rules/rule-k.ts`+`board.ts`+`state.ts`) — **done** (both verifier PASS r1; B-021 + B-016 resolved; B-027 filed). All `src` files free again.
 - **T-042** (B-022 — split `state.test.ts` 693 / `tick.test.ts` 443 / `generate.test.ts` 328 into per-behavior files + a shared `test/test-helpers.ts`; pure test reorg, zero `src/` change) — **done** at 3ce2500 (merged `t-042-test-splits` @ be82489). Audit: 126 unique `it` names in the three deleted files match the new files exactly (zero missing, zero added); 312 tests still pass; `git diff --stat <base>..HEAD -- src/` empty; every touched file < 250 lines (max 236). B-022 resolved.
-- **All scheduled work is now complete.** Open advisory / need-Mike (not scheduled): B-020 (advisory — re-approve install scripts on a *future* dep bump; none on the current tree), B-025 (UI-layer test harness — needs a DOM test capability, i.e. a new dev dep for Mike to approve), B-026 (dedup-survivor spec decision), B-027 (degenerate `min>max` range decision).
+- **Mike ruled 2026-10-07** on the two open decisions: **B-026** → keep §9:237 as written, make the code match (arriving eats resident, track per-cell residency) → **T-043**; **B-025** → "definitely build tests" (jsdom dev-dep harness for `src/ui`) → **T-044**. Both **in progress**, file-disjoint, running in parallel.
+- **Remaining open / advisory (not scheduled):** B-020 (advisory — re-approve install scripts on a *future* dep bump; none on the current tree), B-027 (advisory — `ruleKRange` degenerate `min>max`; no shipped band triggers it).
 
 ## Spec proposals awaiting Mike
 
