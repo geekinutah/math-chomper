@@ -93,7 +93,7 @@ export function handleTick(
     }
   }
 
-  const ctx = toStepCtx(state);
+  const ctx = toStepCtx({ ...state, playerPos });
   const newEnemies: Enemy[] = [];
 
   for (const enemy of state.enemies) {

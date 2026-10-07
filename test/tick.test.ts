@@ -383,4 +383,22 @@ describe("tick", () => {
       expect(cell.value).toBeGreaterThanOrEqual(13);
     }
   });
+
+  it("shy targets the resolved player position", () => {
+    const enemy = makeEnemy({ kind: "shy", pos: { col: 4, row: 3 }, dir: "right", stepTimer: 0 });
+    const s = makeState({ enemies: [enemy], playerPos: { col: 2, row: 2 }, stepTimer: 10, pendingDir: "right" });
+    const after = handleTick(s, { type: "tick", dt: 0.016 }, () => 0.5);
+    expect(after.playerPos).toEqual({ col: 3, row: 2 });
+    expect(after.enemies[0].pos).toEqual({ col: 4, row: 4 });
+    expect(after.lives).toBe(3);
+  });
+
+  it("chaser targets the resolved player position", () => {
+    const enemy = makeEnemy({ kind: "chaser", pos: { col: 4, row: 0 }, dir: "right", stepTimer: 0 });
+    const s = makeState({ enemies: [enemy], playerPos: { col: 2, row: 2 }, stepTimer: 10, pendingDir: "right" });
+    const after = handleTick(s, { type: "tick", dt: 0.016 }, () => 0.5);
+    expect(after.playerPos).toEqual({ col: 3, row: 2 });
+    expect(after.enemies[0].pos).toEqual({ col: 4, row: 1 });
+    expect(after.lives).toBe(3);
+  });
 });
