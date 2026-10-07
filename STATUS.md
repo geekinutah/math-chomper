@@ -43,8 +43,8 @@ Ledger for contracted work. The controller updates this file. Other roles do not
 | T-037 | Keyboard Param Name (B-005) | 3 | done | 1 | — | no |
 | T-038 | Game-Over "Menu" → Title + Wrong-Eat Test (B-006, B-023) | 6 | done | 2 | — | no |
 | T-039 | Enemy Dedup Replacement Spawn (B-010) | 4 | done | 1 | — | no |
-| T-040 | Enemy Step Ctx Takes GameState (B-021) | 4 | in progress | 1 | ../math-chomper-worktrees/t-040-ctx-dedup | no |
-| T-041 | Shared Rule-K Range Helper (B-016) | 2 | in progress | 1 | ../math-chomper-worktrees/t-041-rule-k-dedup | no |
+| T-040 | Enemy Step Ctx Takes GameState (B-021) | 4 | done | 1 | — | no |
+| T-041 | Shared Rule-K Range Helper (B-016) | 2 | done | 1 | — | no |
 
 States: `todo`, `in progress`, `verifying`, `done`, `blocked`.
 
@@ -57,8 +57,8 @@ None. (T-038 round 1 reported a contract ambiguity — the B-023 test's literal 
 - Wave 2026-10-06 complete: T-033–T-037 merged at 7713cdb (B-011/B-017/B-019/B-018/B-005 resolved). All src files free again.
 - **T-038** (B-006, `state.ts`+`screens.ts`+`state.test.ts`; carried B-023) — **done** at cf3568b (verifier PASS r2; B-006 + B-023 resolved; B-025 filed — no unit test imports `src/ui`).
 - **T-039** (B-010, `state.ts` + `tick.ts` + 3 test helpers) — **done** (verifier PASS r1; B-010 resolved; B-026 filed — dedup-survivor spec ambiguity). `state.ts` + `tick.ts` free again → **T-040 (B-021, `enemies.ts`+`tick.ts`) and T-041 (B-016, `board.ts`+`state.ts`) are now claimable in parallel** (file-disjoint from each other).
-- **In progress (parallel, file-disjoint):** **T-040** (B-021 ctx dedup, `enemies.ts`+`tick.ts`+`enemies.test.ts`) **and** **T-041** (B-016 rule-k dedup, new `rules/rule-k.ts`+`board.ts`+`state.ts`). Both pure refactors. (The earlier `state.ts`/`tick.ts` bottleneck that forced T-038 → T-039 serialization is cleared.)
-- **After that:** **T-042** (B-022 test-file splits, pure test files) and **B-020** (advisory: re-approve install scripts) last. B-025 (UI-layer test harness) and B-026 (dedup-survivor spec decision) are open advisory items, not scheduled.
+- **T-040** (B-021 ctx dedup, `enemies.ts`+`tick.ts`+`enemies.test.ts`) and **T-041** (B-016 rule-k dedup, `rules/rule-k.ts`+`board.ts`+`state.ts`) — **done** (both verifier PASS r1; B-021 + B-016 resolved; B-027 filed). All `src` files free again.
+- **Next up:** **T-042** (B-022 test-file splits — `state.test.ts` 668 / `tick.test.ts` ~440 / `generate.test.ts` 328 lines, all over the 250 limit) and **B-020** (advisory: re-approve install scripts) last. Open advisory items, not scheduled: B-025 (UI-layer test harness), B-026 (dedup-survivor spec decision for Mike), B-027 (degenerate `min>max` range).
 
 ## Spec proposals awaiting Mike
 

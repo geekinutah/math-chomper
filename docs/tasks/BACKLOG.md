@@ -19,17 +19,18 @@ Index only. One line per item. The verifier or critic writes the item file in it
 | B-013 | T-027 contract omits closePath from FakeCtx list | T-027 | resolved (contract doc corrected) |
 | B-014 | Dev-dependency audit: vitest transitive vulns, unapproved install scripts | T-027 | resolved (T-031: vitest 5.0.3, 0 vulns, esbuild/fsevents approved) |
 | B-015 | Player has no step duration (spec §6: ~140 ms, floor 80 ms) | T-028 | resolved (T-030: 140 ms ×0.85/level, floor 80 ms, single-slot buffer) |
-| B-016 | Duplicated rule-k logic in generateRule/genRule | T-029 | accepted (T-041 in progress) |
+| B-016 | Duplicated rule-k logic in generateRule/genRule | T-029 | resolved (T-041: shared `ruleKRange` helper; 420 k-sequences byte-identical; verifier PASS r1) |
 | B-017 | Fallback/fill expr cells outside band operand grammar | T-029 | resolved (T-034: fallback + fills derive from GenConfig; verifier PASS r1) |
 | B-018 | Enemy AI targets the pre-resolution player position (one-cell lag) | T-030 | resolved (T-036: step ctx from resolved playerPos; verifier PASS r1) |
 | B-019 | Wrong eat never respawns or freezes (spec §9 "same respawn rule") | T-030 | resolved (T-035: respawn + 700 ms freeze; verifier PASS r1) |
 | B-020 | allowScripts keys are version-pinned; a future vite/esbuild/fsevents bump re-surfaces the warning | T-031 | open (advisory; no action on the current tree) |
-| B-021 | stepEnemy Ctx/`as StepCtx` cast bridges null→undefined refuge | T-033 | accepted (T-040 in progress) |
+| B-021 | stepEnemy Ctx/`as StepCtx` cast bridges null→undefined refuge | T-033 | resolved (T-040: `Ctx`/`StepCtx` dropped, `stepEnemy` takes `GameState`, `isRefuge` `!== null`; verifier PASS r1) |
 | B-022 | Test files exceed the 250-line limit (state 614, tick 404, generate 328) | T-034/T-036 | open (T-042 queued; after batch 3) |
 | B-023 | Wrong-eat respawn test samples one seeded draw; blocked-cell exclusions unguarded | T-035 | resolved (T-038: 200-seed window 61537..61736; verifier confirmed power via mutation) |
 | B-024 | T-034 contract standard-band fallback cycle unreachable as written | T-034 | resolved (contract table corrected at merge) |
 | B-025 | No unit test imports `src/ui`; screen button dispatch (e.g. game-over Menu) unguarded | T-038 | open (advisory — needs a UI-layer test harness) |
 | B-026 | Dedup survivor keeps first-in-array; spec §9:237 says the arriving one removes the resident | T-039 | open (advisory — spec decision for Mike: pin the survivor rule or waive the sentence) |
+| B-027 | `ruleKRange` can report `min > max` with no guard/test; no shipped band triggers it | T-041 | open (advisory — decide: document as degenerate behavior, or add a defensive clamp) |
 
 States: `open`, `accepted`, `resolved`, `declined`.
 
