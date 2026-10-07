@@ -33,8 +33,8 @@ Ledger for contracted work. The controller updates this file. Other roles do not
 | T-027 | Remove Match-Highlight Border (critic fix) | 6 | done | 1 | — | no |
 | T-028 | In-Run Ramp (Level 18+) | 6 | done | 1 | — | no |
 | T-029 | Hard Band Larger Expression Results | 6 | done | 1 | — | no |
-| T-030 | Player Step Duration + Input Buffer (B-015) | 6 | in progress | 1 | ../math-chomper-worktrees/t-030-player-step | yes |
-| T-031 | Dev-Dependency Audit Fix (B-014) | — | in progress | 1 | ../math-chomper-worktrees/t-031-dev-deps | no |
+| T-030 | Player Step Duration + Input Buffer (B-015) | 6 | done | 1 | — | yes |
+| T-031 | Dev-Dependency Audit Fix (B-014) | — | done | 1 | — | no |
 | T-032 | Production RNG Seed (B-009) | 3 | done | 1 | — | no |
 | T-033 | Spawn Functions Take GameState (B-011) | 4 | in progress | 1 | ../math-chomper-worktrees/t-033-spawn-sig | no |
 
@@ -46,9 +46,8 @@ None.
 
 ## Sequencing
 
-- B-005 (keyboard param name), B-006 (game-over Menu button), B-010 (dedup replacement spawn), B-016 (rule-k dedup) all require files owned by in-flight T-030 (`state.ts`, `tick.ts`, `keyboard.ts`, and its four test files). Claim them after T-030 merges.
-- T-033 starts only after T-031 merges (T-031 may make mechanical edits to `test/spawn.test.ts` under the new vitest).
-- T-030/T-031 were claimed by another controller (commit c4ee58d); as of this claim their worktrees do not exist yet. If that session is inactive, Mike can reclaim the two tasks.
+- B-005, B-006, B-010, B-016: unblocked by the T-030 merge; claimable now.
+- T-033: T-031 has merged (vitest 5; no test edits were actually needed). T-033's base predates T-030 — its `test/spawn.test.ts` state literals will need the three new step fields (`stepTimer`/`pendingDir`/`queuedDir`) to typecheck once integrated over T-030; the integration gate will surface it.
 
 ## Spec proposals awaiting Mike
 
