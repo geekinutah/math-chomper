@@ -2,14 +2,7 @@ import { describe, it, expect } from "vitest";
 import type { Cell, Rule } from "@/rules/types";
 import { EASY, HARD, STANDARD } from "@/content/bands";
 import { generateRule, generateBoardForRule, countMatches, allMatchesCleared } from "@/game/board";
-
-function seededRng(seed: number): () => number {
-  let s = seed;
-  return () => {
-    s = (s * 16807) % 2147483647;
-    return (s - 1) / 2147483646;
-  };
-}
+import { seededRng } from "./test-helpers";
 
 describe("board", () => {
   it("generateRule multiples returns k in 2-12", () => {

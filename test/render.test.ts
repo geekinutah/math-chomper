@@ -1,8 +1,9 @@
 import { describe, it, expect } from "vitest";
 import type { Cell, Rule } from "@/rules/types";
-import { BOARD_SIZE, COLS, ROWS, type GameState } from "@/game/state";
+import { COLS, ROWS, type GameState } from "@/game/state";
 import type { Enemy } from "@/game/enemies";
 import { renderBoard } from "@/render/canvas";
+import { emptyBoard } from "./test-helpers";
 
 type Call = { method: string; args: unknown[] };
 
@@ -59,10 +60,6 @@ class FakeCtx {
   strokeRect(...args: unknown[]): void {
     this.record("strokeRect", ...args);
   }
-}
-
-function emptyBoard(): Cell[] {
-  return Array.from({ length: BOARD_SIZE }, () => ({ kind: "empty" as const }));
 }
 
 function makeState(overrides: Partial<GameState> = {}): GameState {

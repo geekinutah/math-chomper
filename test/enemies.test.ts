@@ -1,6 +1,5 @@
 import { describe, it, expect } from "vitest";
 import type { Dir, PlayerPos, GameState } from "@/game/state";
-import type { Cell } from "@/rules/types";
 import {
   stepEnemy,
   legalMoves,
@@ -9,18 +8,7 @@ import {
   type Enemy,
   type EnemyKind,
 } from "@/game/enemies";
-
-function seededRng(seed: number): () => number {
-  let s = seed;
-  return () => {
-    s = (s * 16807) % 2147483647;
-    return (s - 1) / 2147483646;
-  };
-}
-
-function emptyBoard(): Cell[] {
-  return Array.from({ length: 30 }, () => ({ kind: "empty" as const }));
-}
+import { seededRng, emptyBoard } from "./test-helpers";
 
 function makeState(overrides: Partial<GameState> = {}): GameState {
   return {
