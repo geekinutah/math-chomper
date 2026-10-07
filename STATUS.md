@@ -45,6 +45,7 @@ Ledger for contracted work. The controller updates this file. Other roles do not
 | T-039 | Enemy Dedup Replacement Spawn (B-010) | 4 | done | 1 | — | no |
 | T-040 | Enemy Step Ctx Takes GameState (B-021) | 4 | done | 1 | — | no |
 | T-041 | Shared Rule-K Range Helper (B-016) | 2 | done | 1 | — | no |
+| T-042 | Test-File Splits + Shared Test Helpers (B-022) | — | in progress | 1 | ../math-chomper-worktrees/t-042-test-splits | no |
 
 States: `todo`, `in progress`, `verifying`, `done`, `blocked`.
 
@@ -58,7 +59,8 @@ None. (T-038 round 1 reported a contract ambiguity — the B-023 test's literal 
 - **T-038** (B-006, `state.ts`+`screens.ts`+`state.test.ts`; carried B-023) — **done** at cf3568b (verifier PASS r2; B-006 + B-023 resolved; B-025 filed — no unit test imports `src/ui`).
 - **T-039** (B-010, `state.ts` + `tick.ts` + 3 test helpers) — **done** (verifier PASS r1; B-010 resolved; B-026 filed — dedup-survivor spec ambiguity). `state.ts` + `tick.ts` free again → **T-040 (B-021, `enemies.ts`+`tick.ts`) and T-041 (B-016, `board.ts`+`state.ts`) are now claimable in parallel** (file-disjoint from each other).
 - **T-040** (B-021 ctx dedup, `enemies.ts`+`tick.ts`+`enemies.test.ts`) and **T-041** (B-016 rule-k dedup, `rules/rule-k.ts`+`board.ts`+`state.ts`) — **done** (both verifier PASS r1; B-021 + B-016 resolved; B-027 filed). All `src` files free again.
-- **Next up:** **T-042** (B-022 test-file splits — `state.test.ts` 668 / `tick.test.ts` ~440 / `generate.test.ts` 328 lines, all over the 250 limit) and **B-020** (advisory: re-approve install scripts) last. Open advisory items, not scheduled: B-025 (UI-layer test harness), B-026 (dedup-survivor spec decision for Mike), B-027 (degenerate `min>max` range).
+- **In progress:** **T-042** (B-022 — split `state.test.ts` 693 / `tick.test.ts` 443 / `generate.test.ts` 328 into per-behavior files + a shared `test/test-helpers.ts`; pure test reorganization, no `src/` change).
+- **Open advisory / need-Mike (not scheduled):** B-020 (advisory — re-approve install scripts on a *future* dep bump; none on the current tree), B-025 (UI-layer test harness — needs a DOM test capability, i.e. a new dev dep for Mike to approve), B-026 (dedup-survivor spec decision), B-027 (degenerate `min>max` range decision).
 
 ## Spec proposals awaiting Mike
 
