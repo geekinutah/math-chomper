@@ -143,7 +143,7 @@ function handleMove(state: GameState, dir: Dir): GameState {
   return { ...state, queuedDir: dir };
 }
 
-function handleEat(state: GameState): GameState {
+function handleEat(state: GameState, rng: () => number): GameState {
   const idx = cellIndex(state.playerPos);
   const cell = state.board[idx];
   if (cell.kind === "empty") return state;
@@ -174,9 +174,7 @@ function handleEat(state: GameState): GameState {
     return { ...state, board, score, streak, lives, reserveLives, nextLifeThreshold, phase };
   }
 
-  const lives = state.lives - 1;
-  const phase: Phase = lives <= 0 ? "game-over" : state.phase;
-  return { ...state, board, lives, streak: 0, phase };
+  return handleEnemyHit({ ...state, board }, rng);
 }
 
 export function handleEnemyHit(state: GameState, rng: () => number): GameState {
@@ -206,7 +204,7 @@ export function reduce(state: GameState, action: Action, rng?: () => number): Ga
       return handleMove(state, action.dir);
     case "eat":
       if (state.phase !== "playing") return state;
-      return handleEat(state);
+      return handleEat(state, r);
     case "tick":
       return handleTick(state, action, r);
     case "enemy-hit":

@@ -333,6 +333,60 @@ describe("state", () => {
     const s = createInitialState();
     expect(s.refuge).toBeNull();
   });
+
+  it("wrong eat: life lost, streak reset, 700 ms freeze", () => {
+    const pos = { col: 2, row: 2 };
+    const board = boardWithCell(pos, { kind: "number", value: 7 });
+    const s = makePlayingState({ board, streak: 5 });
+    const after = reduce(s, { type: "eat" }, rng);
+    expect(after.lives).toBe(2);
+    expect(after.streak).toBe(0);
+    expect(after.freezeTimer).toBe(700);
+    expect(after.phase).toBe("playing");
+  });
+
+  it("wrong eat: player respawns off enemy and refuge cells", () => {
+    const pos = { col: 2, row: 2 };
+    const board = boardWithCell(pos, { kind: "number", value: 7 });
+    const enemy: Enemy = { id: 1, kind: "straight", pos, dir: "right", stepTimer: 420 };
+    const refuge = { pos: { col: 3, row: 2 }, expiresAt: 0 };
+    const s = makePlayingState({ board, enemies: [enemy], refuge });
+    const after = reduce(s, { type: "eat" }, rng);
+    expect(after.playerPos).not.toEqual(enemy.pos);
+    expect(after.playerPos).not.toEqual(refuge.pos);
+  });
+
+  it("wrong eat on last life: game over, no respawn", () => {
+    const pos = { col: 2, row: 2 };
+    const board = boardWithCell(pos, { kind: "number", value: 7 });
+    const enemy: Enemy = { id: 1, kind: "straight", pos: { col: 3, row: 2 }, dir: "right", stepTimer: 420 };
+    const s = makePlayingState({ board, lives: 1, enemies: [enemy] });
+    const after = reduce(s, { type: "eat" }, rng);
+    expect(after.phase).toBe("game-over");
+    expect(after.lives).toBe(0);
+    expect(after.freezeTimer).toBe(700);
+    expect(after.playerPos).toEqual(pos);
+  });
+
+  it("wrong eat: eaten cell is empty", () => {
+    const pos = { col: 2, row: 2 };
+    const board = boardWithCell(pos, { kind: "number", value: 7 });
+    const s = makePlayingState({ board });
+    const after = reduce(s, { type: "eat" }, rng);
+    expect(after.board[pos.row * COLS + pos.col]).toEqual({ kind: "empty" });
+  });
+
+  it("correct eat: no freeze, no teleport", () => {
+    const pos = { col: 2, row: 2 };
+    const board = boardWithCell(pos, { kind: "number", value: 6 });
+    board[pos.row * COLS + pos.col + 1] = { kind: "number", value: 12 };
+    const enemy: Enemy = { id: 1, kind: "straight", pos: { col: 4, row: 2 }, dir: "right", stepTimer: 420 };
+    const s = makePlayingState({ board, enemies: [enemy] });
+    const after = reduce(s, { type: "eat" }, rng);
+    expect(after.playerPos).toEqual(pos);
+    expect(after.freezeTimer).toBe(0);
+    expect(after.lives).toBe(3);
+  });
 });
 
 describe("player step and buffer", () => {
