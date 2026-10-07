@@ -1,4 +1,5 @@
 import { createInitialState, reduce, type Action, type GameMode, type GameState } from "@/game/state";
+import { createRng, seedFromTime } from "@/game/rng";
 import { createLoop } from "@/game/loop";
 import { attachKeyboard } from "@/input/keyboard";
 import { attachTouch } from "@/input/touch";
@@ -27,11 +28,7 @@ import {
 } from "@/storage";
 import type { BandName } from "@/content/bands";
 
-let lcg = 42;
-const rng = (): number => {
-  lcg = (lcg * 16807) % 2147483647;
-  return (lcg - 1) / 2147483646;
-};
+const rng = createRng(seedFromTime(Date.now()));
 
 const canvas = document.querySelector<HTMLCanvasElement>("#board");
 const hudEl = document.querySelector<HTMLElement>("#hud");

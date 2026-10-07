@@ -42,7 +42,7 @@ export function edgeCells(): PlayerPos[];
   - If an enemy is on that cell, the caller (tick) removes it.
   - Return the Refuge.
 - **refugeDuration**: Level < 12 → 5000ms, Level ≥ 12 → 2500ms.
-- **edgeCells**: All 22 edge cells (perimeter of 6×5 grid). Top row (6) + bottom row (6) + left col (3, excluding corners already counted) + right col (3) = 22.
+- **edgeCells**: All 18 edge cells (perimeter of 6×5 grid = 2·(6+5)−4). Top row (6) + bottom row (6) + left col (3, excluding corners already counted) + right col (3) = 18.
 - No `any`. No default exports. No `Math.random`. File under 250 lines.
 
 ## Tests to write
@@ -58,7 +58,7 @@ export function edgeCells(): PlayerPos[];
 | `spawnEnemy null when no valid edge` | Player + refuge cover all edges → null (edge case) |
 | `spawnEnemy has correct kind` | Result.kind matches input |
 | `spawnEnemy stepTimer is 420` | Base enemy step duration |
-| `edgeCells returns 22 cells` | All perimeter cells, no interior |
+| `edgeCells returns 18 cells` | All perimeter cells, no interior |
 | `edgeCells includes all four sides` | Top, bottom, left, right |
 | `refugeDuration: level < 12 → 5000` | refugeDuration(1)===5000, refugeDuration(11)===5000 |
 | `refugeDuration: level ≥ 12 → 2500` | refugeDuration(12)===2500, refugeDuration(20)===2500 |
@@ -74,9 +74,9 @@ export function edgeCells(): PlayerPos[];
 
 ## Edges
 
-- Edge cells: 6×5 grid has 22 perimeter cells (6+6+3+3=22, corners counted once).
+- Edge cells: 6×5 grid has 18 perimeter cells (6+6+3+3=18, corners counted once).
 - If the player is on an edge and a refuge is on another edge, there are still valid spawns.
-- The "no valid edge" case (return null) requires the player + refuge to cover all 22 edges, which is impossible with 1 player + 1 refuge. But handle it gracefully.
+- The "no valid edge" case (return null) requires the player + refuge + blocked cells to cover all 18 edges, which is impossible with 1 player + 1 refuge. But handle it gracefully.
 
 ## Out of scope
 

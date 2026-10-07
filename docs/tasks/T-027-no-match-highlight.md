@@ -26,7 +26,7 @@ Do not create or modify files outside this list. In particular: do not edit `PRO
 
 ## Tests to write in `test/render.test.ts` (before the code change)
 
-Vitest runs in a node environment (no DOM, no canvas). Build a `FakeCtx` class implementing exactly the `CanvasRenderingContext2D` members that `canvas.ts` and `sprites.ts` use — `fillRect`, `beginPath`, `moveTo`, `lineTo`, `stroke`, `arc`, `fill`, `fillText`, `strokeRect` — plus settable `fillStyle`, `strokeStyle`, `lineWidth`, `font`, `textAlign`, `textBaseline`. Record every method call as `{ method: string; args: unknown[] }` in an array the tests can inspect. Cast the instance with `as unknown as CanvasRenderingContext2D`; no `any`. `test/beeps.test.ts` (typed fake classes) is the house precedent.
+Vitest runs in a node environment (no DOM, no canvas). Build a `FakeCtx` class implementing exactly the `CanvasRenderingContext2D` members that `canvas.ts` and `sprites.ts` use — `fillRect`, `beginPath`, `moveTo`, `lineTo`, `closePath`, `stroke`, `arc`, `fill`, `fillText`, `strokeRect` — plus settable `fillStyle`, `strokeStyle`, `lineWidth`, `font`, `textAlign`, `textBaseline`. Record every method call as `{ method: string; args: unknown[] }` in an array the tests can inspect. Cast the instance with `as unknown as CanvasRenderingContext2D`; no `any`. `test/beeps.test.ts` (typed fake classes) is the house precedent.
 
 | Test name | Behavior proved |
 |-----------|-----------------|

@@ -16,8 +16,9 @@ Do not create or modify files outside this list.
 
 ## Requirements
 
-- Export: `export function createLoop(dispatch: (action: Action) => void, onFrame: (state: GameState) => void): () => void`
+- Export: `export function createLoop(dispatch: (action: Action) => void, onFrame: (state: GameState) => void, getState: () => GameState): () => void`
   - Returns a stop function that cancels the loop.
+  - `getState` supplies the current state to `onFrame` each rAF frame; the loop itself never stores game truth.
 - The loop uses `requestAnimationFrame`. Each frame, it accumulates time and dispatches `{ type: "tick", dt }` in fixed 1/60s steps (approximately 16.67 ms).
 - After dispatching ticks, call `onFrame(state)` once per rAF frame (not per tick). The `onFrame` callback receives the current state for rendering.
 - The `dispatch` function is provided by the caller (connects to the reducer).
