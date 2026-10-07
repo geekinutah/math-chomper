@@ -37,6 +37,10 @@ Ledger for contracted work. The controller updates this file. Other roles do not
 | T-031 | Dev-Dependency Audit Fix (B-014) | — | done | 1 | — | no |
 | T-032 | Production RNG Seed (B-009) | 3 | done | 1 | — | no |
 | T-033 | Spawn Functions Take GameState (B-011) | 4 | in progress | 1 | ../math-chomper-worktrees/t-033-spawn-sig | no |
+| T-034 | Band-Aware Last-Resort Board Cells (B-017) | 2 | in progress | 1 | ../math-chomper-worktrees/t-034-band-fallback | no |
+| T-035 | Wrong-Eat Respawn + Freeze (B-019) | 3 | in progress | 1 | ../math-chomper-worktrees/t-035-wrong-eat-respawn | no |
+| T-036 | Step Ctx Uses Resolved Player Position (B-018) | 4 | in progress | 1 | ../math-chomper-worktrees/t-036-stale-targeting | no |
+| T-037 | Keyboard Param Name (B-005) | 3 | in progress | 1 | ../math-chomper-worktrees/t-037-keyboard-param | no |
 
 States: `todo`, `in progress`, `verifying`, `done`, `blocked`.
 
@@ -46,8 +50,10 @@ None.
 
 ## Sequencing
 
-- B-005, B-006, B-010, B-016: unblocked by the T-030 merge; claimable now.
-- T-033: T-031 has merged (vitest 5; no test edits were actually needed). T-033's base predates T-030 — its `test/spawn.test.ts` state literals will need the three new step fields (`stepTimer`/`pendingDir`/`queuedDir`) to typecheck once integrated over T-030; the integration gate will surface it.
+- B-006 (game-over Menu button) and B-016 (rule-k dedup) both need `src/game/state.ts` — claim after T-035 merges.
+- B-010 (dedup replacement spawn) needs `src/game/tick.ts` — claim after T-036 merges.
+- B-020 is advisory (re-approve install scripts on a future esbuild/fsevents move); no action on the current tree.
+- T-033/T-034/T-035/T-036/T-037 all work from post-T-030/T-031 main, so the earlier note about T-033's pre-T-030 base is moot; the five file sets are mutually disjoint.
 
 ## Spec proposals awaiting Mike
 
@@ -56,5 +62,5 @@ None.
 3. ~~**§8 Hard expressions ambiguous** (critic Phase 5).~~ Accepted by Mike 2026-10-06 → T-029. Decision: Hard = all four ops, operands 0–12, results ≥ 13 (bounded retry + known-valid fallback). Consequence: Hard equality/inequality k draws 13–20; board generation gains a termination cap (resolves B-003).
 4. ~~**§13 settings persistence** (critic Phase 5).~~ Resolved by Phase 6 (T-023/T-026): settings saved to `mathchomper.settings.v1`, mode select remembers last choice, mute/touch/band persist.
 5. ~~**§7 vs §8 operand range** (B-002).~~ Accepted by Mike 2026-10-06: §8's band tables are the operational source of truth; §7's per-operator split is the 1986 original, not a v1 generation constraint. No code change; a precedence clause was added to the §7 grammar line. B-002 resolved.
-6. **Band-aware last-resort board cells** (B-017). The 100-attempt cell fallback (`2×7`) and the known-valid fill cells can violate the Easy band's op list / operand grammar, but only after a degenerate-rng draw. T-029's contract mandated the current table. Recommendation: make both last-resort paths band-aware (op drawn from `config.exprOps`, operands clamped to the band range) — strictly spec-compliant, a few lines in `src/rules/generate.ts`; or accept the table as documented last-resort output. Needs Mike's call before a contract.
+6. ~~**Band-aware last-resort board cells** (B-017).~~ Accepted by Mike 2026-10-06 → T-034. Both last-resort paths now derive from `GenConfig`: fallback is a deterministic candidate scan (first legal of `min+max`, `max+max`, `max×max`), fills use in-range operands (`12+1` = k, `12+12` = 24 ≠ k).
 7. **B-011 advisory: pre-blocking enemy cells at spawn.** B-011's direction suggested deriving spawn blocking from `state.enemies`. Not adopted in T-033: spec §9 names exactly "not the player's cell and not a refuge" and routes two-enemies-on-one-cell through dedup. No spec change recommended; recorded so the rejection is visible. If Mike wants enemy cells to block spawns, that is a §9 edit.
