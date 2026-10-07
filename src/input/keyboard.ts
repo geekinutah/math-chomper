@@ -17,10 +17,10 @@ const MOVE_KEYS: Record<string, Dir> = {
 
 export function attachKeyboard(
   dispatch: (action: Action) => void,
-  isPlaying: () => Phase
+  getPhase: () => Phase
 ): () => void {
   function handler(e: KeyboardEvent): void {
-    const phase = isPlaying();
+    const phase = getPhase();
 
     const dir = MOVE_KEYS[e.key];
     if (dir !== undefined) {
