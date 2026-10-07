@@ -35,7 +35,7 @@ Do not create or modify files outside this list.
 |-----------|-----------------|
 | `12÷2 equals 6` | evalExpr("12÷2") === 6 |
 | `5÷2 is null` | evalExpr("5÷2") === null (not exact) |
-| `0÷5 is null` | evalExpr("0÷5") === null (b is 0? no, a is 0, b is 5, 0%5===0, result 0) — actually 0÷5 = 0, valid. Use `10÷0` for div-by-zero. |
+| `0÷5 equals 0` | evalExpr("0÷5") === 0 (dividend is 0, 0%5===0, division is exact) |
 | `10÷0 is null` | evalExpr("10÷0") === null (division by zero) |
 | `4+5 equals 9` | evalExpr("4+5") === 9 |
 | `7−3 equals 4` | evalExpr("7−3") === 4 |
