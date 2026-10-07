@@ -45,12 +45,6 @@ function nextId(enemies: Enemy[]): number {
   return max + 1;
 }
 
-type StepCtx = Parameters<typeof stepEnemy>[1];
-
-function toStepCtx(s: GameState): StepCtx {
-  return { ...s, refuge: s.refuge ?? undefined } as StepCtx;
-}
-
 export function handleTick(
   state: GameState,
   action: { type: "tick"; dt: number },
@@ -94,7 +88,7 @@ export function handleTick(
     }
   }
 
-  const ctx = toStepCtx({ ...state, playerPos });
+  const ctx = { ...state, playerPos };
   const newEnemies: Enemy[] = [];
 
   for (const enemy of state.enemies) {
