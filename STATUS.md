@@ -42,7 +42,7 @@ Ledger for contracted work. The controller updates this file. Other roles do not
 | T-036 | Step Ctx Uses Resolved Player Position (B-018) | 4 | done | 1 | — | no |
 | T-037 | Keyboard Param Name (B-005) | 3 | done | 1 | — | no |
 | T-038 | Game-Over "Menu" → Title + Wrong-Eat Test (B-006, B-023) | 6 | done | 2 | — | no |
-| T-039 | Enemy Dedup Replacement Spawn (B-010) | 4 | in progress | 1 | ../math-chomper-worktrees/t-039-replacement-spawn | no |
+| T-039 | Enemy Dedup Replacement Spawn (B-010) | 4 | done | 1 | — | no |
 
 States: `todo`, `in progress`, `verifying`, `done`, `blocked`.
 
@@ -54,10 +54,9 @@ None. (T-038 round 1 reported a contract ambiguity — the B-023 test's literal 
 
 - Wave 2026-10-06 complete: T-033–T-037 merged at 7713cdb (B-011/B-017/B-019/B-018/B-005 resolved). All src files free again.
 - **T-038** (B-006, `state.ts`+`screens.ts`+`state.test.ts`; carried B-023) — **done** at cf3568b (verifier PASS r2; B-006 + B-023 resolved; B-025 filed — no unit test imports `src/ui`).
-- **T-039** (B-010, `state.ts` new `pendingSpawnAt` field + `tick.ts` + 3 test helpers) — now in progress. `state.ts` + `tick.ts` reserved by it.
-- **`state.ts` is the bottleneck** — T-038, T-039, and T-041 all need it, and T-039 + T-040 both need `tick.ts`. So the wave is serialized by file ownership, not parallel:
-  - T-038 (state.ts) → then **T-039** (B-010, `state.ts` new `pendingSpawnAt` field + `tick.ts` + `tick.test.ts`) → then **T-040** (B-021 ctx dedup, `enemies.ts`+`tick.ts`) **in parallel with** **T-041** (B-016 rule-k dedup, `board.ts`+`state.ts`). T-040 and T-041 are file-disjoint from each other, so they run together once T-039 merges.
-  - Then **T-042** (B-022 test-file splits, pure test files) and **B-020** (advisory: re-approve install scripts) last.
+- **T-039** (B-010, `state.ts` + `tick.ts` + 3 test helpers) — **done** (verifier PASS r1; B-010 resolved; B-026 filed — dedup-survivor spec ambiguity). `state.ts` + `tick.ts` free again → **T-040 (B-021, `enemies.ts`+`tick.ts`) and T-041 (B-016, `board.ts`+`state.ts`) are now claimable in parallel** (file-disjoint from each other).
+- **Next up (claimable now):** **T-040** (B-021 ctx dedup, `enemies.ts`+`tick.ts`) **in parallel with** **T-041** (B-016 rule-k dedup, `board.ts`+`state.ts`). They are file-disjoint from each other, so they run together. (The earlier `state.ts`/`tick.ts` bottleneck that forced T-038 → T-039 serialization is cleared.)
+- **After that:** **T-042** (B-022 test-file splits, pure test files) and **B-020** (advisory: re-approve install scripts) last. B-025 (UI-layer test harness) and B-026 (dedup-survivor spec decision) are open advisory items, not scheduled.
 
 ## Spec proposals awaiting Mike
 
@@ -68,3 +67,4 @@ None. (T-038 round 1 reported a contract ambiguity — the B-023 test's literal 
 5. ~~**§7 vs §8 operand range** (B-002).~~ Accepted by Mike 2026-10-06: §8's band tables are the operational source of truth; §7's per-operator split is the 1986 original, not a v1 generation constraint. No code change; a precedence clause was added to the §7 grammar line. B-002 resolved.
 6. ~~**Band-aware last-resort board cells** (B-017).~~ Accepted by Mike 2026-10-06 → T-034. Both last-resort paths now derive from `GenConfig`: fallback is a deterministic candidate scan (first legal of `min+max`, `max+max`, `max×max`), fills use in-range operands (`12+1` = k, `12+12` = 24 ≠ k).
 7. **B-011 advisory: pre-blocking enemy cells at spawn.** B-011's direction suggested deriving spawn blocking from `state.enemies`. Not adopted in T-033: spec §9 names exactly "not the player's cell and not a refuge" and routes two-enemies-on-one-cell through dedup. No spec change recommended; recorded so the rejection is visible. If Mike wants enemy cells to block spawns, that is a §9 edit.
+8. **B-026 dedup survivor: "arriving removes the resident" (§9:237).** *Non-blocking.* The dedup keeps the first-in-array enemy; §9's "the arriving one removes the resident" does not map unambiguously to array order when two movers share a cell. The game works correctly either way (ids are not player-visible; enemy kind is the visible trait), so nothing is blocked. For Mike to decide: (a) pin a survivor rule (e.g. drop the mover(s) that stepped onto a cell, keep the resident) and we update the dedup + strengthen the test, or (b) waive the sentence as cosmetic. No action taken until Mike picks.
