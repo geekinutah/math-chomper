@@ -91,6 +91,10 @@ export function handleTick(
   const ctx = { ...state, playerPos };
   const newEnemies: Enemy[] = [];
 
+  // Start-of-tick cell per enemy, so dedup can tell a resident from an arriver.
+  const startPos = new Map<number, { col: number; row: number }>();
+  for (const en of state.enemies) startPos.set(en.id, en.pos);
+
   for (const enemy of state.enemies) {
     const e: Enemy = { ...enemy, stepTimer: enemy.stepTimer - dtMs };
     if (e.stepTimer > 0) {
@@ -133,16 +137,22 @@ export function handleTick(
     newEnemies.push(e);
   }
 
-  // Remove residents when two enemies share a cell (keep first occurrence)
-  const seen = new Set<string>();
-  const deduped: Enemy[] = [];
+  // Two enemies sharing a cell: the arriving one removes the resident. Ties keep first in array.
+  const dedupMap = new Map<string, Enemy>();
   for (const e of newEnemies) {
     const key = `${e.pos.col},${e.pos.row}`;
-    if (!seen.has(key)) {
-      seen.add(key);
-      deduped.push(e);
+    const cur = dedupMap.get(key);
+    if (!cur) {
+      dedupMap.set(key, e);
+      continue;
     }
+    const curStart = startPos.get(cur.id);
+    const eStart = startPos.get(e.id);
+    const curIsResident = curStart !== undefined && sameCell(curStart, e.pos);
+    const eIsResident = eStart !== undefined && sameCell(eStart, e.pos);
+    if (curIsResident && !eIsResident) dedupMap.set(key, e);
   }
+  const deduped = [...dedupMap.values()];
 
   const cap = enemyCap(state.level);
   const removedCount = newEnemies.length - deduped.length;

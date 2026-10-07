@@ -38,12 +38,35 @@ describe("tick", () => {
   });
 
   it("two enemies same cell: arriving removes resident", () => {
-    const e1 = makeEnemy({ id: 1, kind: "straight", pos: { col: 0, row: 1 }, dir: "right", stepTimer: 420 });
-    const e2 = makeEnemy({ id: 2, kind: "straight", pos: { col: 1, row: 0 }, dir: "down", stepTimer: 420 });
-    const s = makeState({ enemies: [e1, e2] });
+    // Resident sits in cooldown (999 - 500 > 0) so it never leaves (1,1).
+    const resident = makeEnemy({ id: 1, kind: "straight", pos: { col: 1, row: 1 }, stepTimer: 999 });
+    // Arriver steps down onto the resident's cell (1,1).
+    const arriver = makeEnemy({ id: 2, kind: "straight", pos: { col: 1, row: 0 }, dir: "down", stepTimer: 420 });
+    const s = makeState({ enemies: [resident, arriver] });
     const after = handleTick(s, { type: "tick", dt: 0.5 }, seededRng(1));
     const atCell = after.enemies.filter((e) => sameCell(e.pos, { col: 1, row: 1 }));
     expect(atCell).toHaveLength(1);
+    expect(atCell[0].id).toBe(2);
+  });
+
+  it("dedup survivor is independent of array order: arriving still eats resident", () => {
+    const resident = makeEnemy({ id: 1, kind: "straight", pos: { col: 1, row: 1 }, stepTimer: 999 });
+    const arriver = makeEnemy({ id: 2, kind: "straight", pos: { col: 1, row: 0 }, dir: "down", stepTimer: 420 });
+    const s = makeState({ enemies: [arriver, resident] });
+    const after = handleTick(s, { type: "tick", dt: 0.5 }, seededRng(1));
+    const atCell = after.enemies.filter((e) => sameCell(e.pos, { col: 1, row: 1 }));
+    expect(atCell).toHaveLength(1);
+    expect(atCell[0].id).toBe(2);
+  });
+
+  it("two arrivers on a shared empty cell: first in array survives", () => {
+    const a = makeEnemy({ id: 1, kind: "straight", pos: { col: 0, row: 1 }, dir: "right", stepTimer: 420 });
+    const b = makeEnemy({ id: 2, kind: "straight", pos: { col: 1, row: 0 }, dir: "down", stepTimer: 420 });
+    const s = makeState({ enemies: [a, b] });
+    const after = handleTick(s, { type: "tick", dt: 0.5 }, seededRng(1));
+    const atCell = after.enemies.filter((e) => sameCell(e.pos, { col: 1, row: 1 }));
+    expect(atCell).toHaveLength(1);
+    expect(atCell[0].id).toBe(1);
   });
 
   it("enemy spawn respects cap", () => {
